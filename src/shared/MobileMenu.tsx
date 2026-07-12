@@ -1,12 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { X, GraduationCap, LayoutDashboard, LogOut, LogIn } from "@/shared/Icons";
-import { cn } from "@/lib/utils";
+import { X, LogIn, User } from "@/shared/Icons";
 import ActiveLink, { type NavItem } from "@/shared/ActiveLink";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+import { cn } from "@/lib/utils";
 
 export interface MobileMenuProps {
   isOpen: boolean;
@@ -22,10 +20,8 @@ export interface MobileMenuProps {
     profile: { label: string; href: string };
     logout: { label: string };
   };
-  user: boolean;
+  user: any; // Ideally replace 'any' with a User type when available
 }
-
-// ─── MobileMenu ───────────────────────────────────────────────────────────────
 
 export default function MobileMenu({
   isOpen,
@@ -36,154 +32,120 @@ export default function MobileMenu({
   userLinks,
   user,
 }: MobileMenuProps) {
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   return (
-    <>
-      {/* Backdrop overlay */}
-      <div
-        role="presentation"
-        aria-hidden="true"
-        onClick={onClose}
+    <div 
+      className={cn(
+        "fixed inset-0 z-50 lg:hidden transition-all duration-300",
+        isOpen ? "visible" : "invisible delay-300"
+      )}
+    >
+      {/* Backdrop */}
+      <div 
         className={cn(
-          "fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
-          isOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          "fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300",
+          isOpen ? "opacity-100" : "opacity-0"
         )}
+        onClick={onClose}
+        aria-hidden="true"
       />
 
-      {/* Drawer panel */}
-      <div
-        id="mobile-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Mobile navigation menu"
+      {/* Drawer */}
+      <div 
         className={cn(
-          "fixed top-0 right-0 z-50 h-full w-72 bg-white dark:bg-[#1e293b] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden flex flex-col",
+          "fixed inset-y-0 right-0 w-[280px] sm:w-[320px] bg-white dark:bg-dark-bg shadow-2xl border-l border-border dark:border-secondary flex flex-col transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* ── Drawer Header ─────────────────────────────── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border dark:border-secondary">
-          <div className="flex items-center gap-2">
-            <GraduationCap
-              size={22}
-              className="text-primary"
-              aria-hidden="true"
-            />
-            <span className="font-bold text-base text-text-primary dark:text-surface">
-              LearnHub
-            </span>
-          </div>
-
+        
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border dark:border-secondary">
+          <span className="text-lg font-bold text-text-primary dark:text-surface">
+            Menu
+          </span>
           <button
-            type="button"
             onClick={onClose}
-            aria-label="Close navigation menu"
-            className="p-2 rounded-full hover:bg-primary-light text-text-secondary hover:text-primary-dark transition-colors duration-200"
+            className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-label="Close menu"
           >
-            <X size={20} aria-hidden="true" />
+            <X size={20} />
           </button>
         </div>
 
-        {/* ── Drawer Body ───────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-6">
-
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 flex flex-col gap-8">
+          
           {/* Navigation Links */}
-          <nav aria-label="Mobile navigation links">
-            <ul className="flex flex-col gap-1" role="list">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <li key={item.id}>
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors duration-200",
-                        isActive
-                          ? "bg-primary-light dark:bg-secondary text-primary-dark dark:text-surface font-semibold"
-                          : "text-text-secondary hover:bg-primary-light dark:hover:bg-secondary hover:text-primary-dark dark:hover:text-surface"
-                      )}
-                    >
-                      {isActive && (
-                        <span
-                          aria-hidden="true"
-                          className="w-1 h-5 rounded-full bg-primary shrink-0"
-                        />
-                      )}
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <ActiveLink 
+                key={item.id} 
+                item={item} 
+                pathname={pathname}
+                onClick={onClose}
+              />
+            ))}
           </nav>
 
-          <hr className="border-border dark:border-secondary" />
-
-          {/* User Section */}
-          {user ? (
-            <div className="flex flex-col gap-3">
-              {/* Profile row */}
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface dark:bg-secondary">
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary shrink-0">
-                  <Image
-                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                    alt="User profile picture"
-                    fill
-                    unoptimized
-                    sizes="40px"
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-text-primary dark:text-surface">
-                    John Doe
-                  </p>
-                  <p className="text-xs text-text-secondary">Student</p>
-                </div>
+          {/* Auth / User Section */}
+          <div className="mt-auto pt-8 border-t border-border dark:border-secondary">
+            {!user ? (
+              <div className="flex flex-col gap-3">
+                <Link
+                  href={authLinks.login.href}
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-border dark:border-secondary text-sm font-semibold text-text-primary dark:text-surface hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                >
+                  <LogIn size={18} />
+                  {authLinks.login.label}
+                </Link>
+                <Link
+                  href={authLinks.register.href}
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-colors shadow-sm"
+                >
+                  <User size={18} />
+                  {authLinks.register.label}
+                </Link>
               </div>
-
-              {/* Dashboard link */}
-              <Link
-                href={userLinks.dashboard.href}
-                onClick={onClose}
-                className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium bg-primary-light dark:bg-secondary text-primary-dark dark:text-surface hover:bg-primary-light-hover dark:hover:bg-secondary-light transition-colors duration-200"
-              >
-                <LayoutDashboard size={16} aria-hidden="true" />
-                {userLinks.dashboard.label}
-              </Link>
-
-              {/* Logout */}
-              <button
-                type="button"
-                className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:bg-danger-light dark:hover:bg-danger-darker hover:text-danger-dark dark:hover:text-danger transition-colors duration-200"
-              >
-                <LogOut size={16} aria-hidden="true" />
-                {userLinks.logout.label}
-              </button>
-            </div>
-          ) : (
-          <div className="flex flex-col gap-3">
-            <Link
-              href={authLinks.login.href}
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary-hover active:bg-primary-active transition-colors duration-200 shadow-sm"
-            >
-              <LogIn size={16} aria-hidden="true" />
-              {authLinks.login.label}
-            </Link>
-            <Link
-              href={authLinks.register.href}
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border border-primary text-primary hover:bg-primary/5 active:bg-primary/10 transition-colors duration-200"
-            >
-              {authLinks.register.label}
-            </Link>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Link
+                  href={userLinks.dashboard.href}
+                  onClick={onClose}
+                  className="block px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary dark:hover:text-surface transition-colors"
+                >
+                  {userLinks.dashboard.label}
+                </Link>
+                <Link
+                  href={userLinks.profile.href}
+                  onClick={onClose}
+                  className="block px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary dark:hover:text-surface transition-colors"
+                >
+                  {userLinks.profile.label}
+                </Link>
+                <button
+                  onClick={onClose}
+                  className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                >
+                  {userLinks.logout.label}
+                </button>
+              </div>
+            )}
           </div>
-          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
