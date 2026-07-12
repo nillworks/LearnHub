@@ -4,82 +4,104 @@ import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 
-const EyeIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-)
-const EyeOffIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-)
-const MailIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-)
-const LockIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-)
-const ArrowRightIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-)
-const SparklesIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
-)
-const TargetIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-)
+import { Eye as EyeIcon, EyeOff as EyeOffIcon, Mail as MailIcon, Lock as LockIcon, ArrowRight as ArrowRightIcon, Sparkles as SparklesIcon, Target as TargetIcon } from "lucide-react"
 
-export default function LoginForm() {
+export default function LoginForm({ onSubmit }: { onSubmit: (data: any) => Promise<void> | void }) {
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  
+  const [errors, setErrors] = useState({ email: '', password: '' })
+
+  const handleClearError = (field: string) => {
+    if (errors[field as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [field]: '' }))
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    const formDataObj = new FormData(e.currentTarget)
+    const data = Object.fromEntries(formDataObj.entries())
+    
+    let hasError = false
+    const newErrors = { email: '', password: '' }
+
+    if (!data.email) {
+      newErrors.email = 'Email is required'
+      hasError = true
+    } else if (!/\S+@\S+\.\S+/.test(data.email as string)) {
+      newErrors.email = 'Invalid email address'
+      hasError = true
+    }
+
+    if (!data.password) {
+      newErrors.password = 'Password is required'
+      hasError = true
+    }
+
+    if (hasError) {
+      setErrors(newErrors)
+      return
+    }
+
+    setIsLoading(true)
+    
+    try {
+      await onSubmit(data)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center bg-surface dark:bg-dark-bg py-12 lg:py-0 overflow-hidden relative">
+    <div className="min-h-[calc(100vh-80px)] flex flex-col justify-center bg-surface dark:bg-dark-bg py-12 lg:py-16 relative">
       
       {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary-light/40 dark:bg-primary-darker/20 blur-[120px]"></div>
-        <div className="absolute bottom-[10%] -right-[10%] w-[40%] h-[60%] rounded-full bg-primary-light/30 dark:bg-primary-darker/20 blur-[100px]"></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-primary-light/40 dark:bg-primary-darker/20 blur-[120px]"></div>
+        <div className="absolute -bottom-[20%] -left-[10%] w-[50%] h-[60%] rounded-full bg-primary-light/30 dark:bg-primary-darker/20 blur-[100px]"></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
           
           {/* Left Column: Visuals & Copy */}
           <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1 pr-0 lg:pr-12 xl:pr-24">
             
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#1e293b] border border-border/50 shadow-sm text-primary-dark dark:text-primary-light font-semibold text-sm mb-8 w-fit">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-              </span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white dark:bg-[#1e293b] border border-border/60 shadow-sm text-text-secondary dark:text-surface font-medium text-sm mb-10 w-fit">
+              <span className="h-2 w-2 rounded-full bg-primary"></span>
               Welcome back to LearnHub
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-text-primary dark:text-surface tracking-tight leading-[1.1] mb-6">
-              Pick up right where you <span className="text-primary relative inline-block">
+            <h1 className="text-[2.75rem] sm:text-6xl lg:text-[4rem] font-heading font-bold text-text-primary dark:text-surface tracking-tight leading-[1.1] mb-6">
+              Pick up right where you <br className="hidden sm:block" />
+              <span className="text-primary relative inline-block mt-1">
                 left off.
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary-light/60 dark:text-primary-dark/60 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="transparent" strokeLinecap="round" />
-                </svg>
+                <span className="absolute bottom-0 left-0 w-full h-[45%] bg-primary-light dark:bg-primary-darker/50 -z-10"></span>
               </span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-text-secondary font-body leading-relaxed mb-12">
+            <p className="text-lg text-text-secondary font-body leading-relaxed mb-12 max-w-[540px]">
               Your personalized curriculum, expert mentors, and community discussions are waiting for you. Log in to continue your journey.
             </p>
             
             {/* Feature Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="p-6 rounded-3xl bg-white/60 dark:bg-[#1e293b]/60 backdrop-blur-xl border border-white/20 dark:border-secondary/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-2xl bg-primary-light dark:bg-primary-darker flex items-center justify-center text-primary-dark dark:text-primary-light mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <SparklesIcon />
+              <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-border/40 group">
+                <div className="w-12 h-12 rounded-[1rem] bg-surface dark:bg-dark-bg flex items-center justify-center text-primary-dark dark:text-primary-light mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <SparklesIcon className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading font-bold text-lg text-text-primary dark:text-surface mb-2">Resume Courses</h3>
-                <p className="text-sm text-text-secondary font-body leading-relaxed">Jump back into your active lessons seamlessly without missing a beat.</p>
+                <h3 className="font-heading font-bold text-xl text-text-primary dark:text-surface mb-3">Resume Courses</h3>
+                <p className="text-text-secondary font-body leading-relaxed text-[15px]">Jump back into your active lessons seamlessly without missing a beat.</p>
               </div>
-              <div className="p-6 rounded-3xl bg-white/60 dark:bg-[#1e293b]/60 backdrop-blur-xl border border-white/20 dark:border-secondary/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-2xl bg-primary-light dark:bg-primary-darker flex items-center justify-center text-primary-dark dark:text-primary-light mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <TargetIcon />
+              
+              <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-border/40 group">
+                <div className="w-12 h-12 rounded-[1rem] bg-surface dark:bg-dark-bg flex items-center justify-center text-primary-dark dark:text-primary-light mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <TargetIcon className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading font-bold text-lg text-text-primary dark:text-surface mb-2">Track Progress</h3>
-                <p className="text-sm text-text-secondary font-body leading-relaxed">Keep your daily learning streak alive and hit your weekly goals.</p>
+                <h3 className="font-heading font-bold text-xl text-text-primary dark:text-surface mb-3">Track Progress</h3>
+                <p className="text-text-secondary font-body leading-relaxed text-[15px]">Keep your daily learning streak alive and hit your weekly goals.</p>
               </div>
             </div>
           </div>
@@ -101,7 +123,7 @@ export default function LoginForm() {
                   </p>
                 </div>
 
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   
                   {/* Email Field */}
                   <div className="space-y-2.5">
@@ -114,11 +136,17 @@ export default function LoginForm() {
                       </div>
                       <input
                         id="email"
+                        name="email"
                         type="email"
+                        onChange={() => handleClearError('email')}
                         placeholder="e.g., alex@company.com"
-                        className="w-full pl-12 pr-4 py-3.5 bg-surface dark:bg-[#0f172a] border border-border dark:border-secondary rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 font-body"
+                        className={cn(
+                          "w-full pl-12 pr-4 py-3.5 bg-surface dark:bg-[#0f172a] border rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus:outline-none focus:ring-4 transition-all duration-300 font-body",
+                          errors.email ? "border-danger focus:ring-danger/10 focus:border-danger" : "border-border dark:border-secondary focus:ring-primary/10 focus:border-primary"
+                        )}
                       />
                     </div>
+                    {errors.email && <p className="text-danger-dark text-xs font-semibold">{errors.email}</p>}
                   </div>
 
                   {/* Password Field */}
@@ -140,9 +168,14 @@ export default function LoginForm() {
                       </div>
                       <input
                         id="password"
+                        name="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="Enter your secure password"
-                        className="w-full pl-12 pr-12 py-3.5 bg-surface dark:bg-[#0f172a] border border-border dark:border-secondary rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 font-body"
+                        onChange={() => handleClearError('password')}
+                        placeholder="Enter your password"
+                        className={cn(
+                          "w-full pl-12 pr-12 py-3.5 bg-surface dark:bg-[#0f172a] border rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus:outline-none focus:ring-4 transition-all duration-300 font-body",
+                          errors.password ? "border-danger focus:ring-danger/10 focus:border-danger" : "border-border dark:border-secondary focus:ring-primary/10 focus:border-primary"
+                        )}
                       />
                       <button
                         type="button"
@@ -153,17 +186,46 @@ export default function LoginForm() {
                         {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                       </button>
                     </div>
+                    {errors.password && <p className="text-danger-dark text-xs font-semibold">{errors.password}</p>}
                   </div>
 
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-semibold py-4 px-4 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 font-body mt-4"
+                    disabled={isLoading}
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary-active disabled:bg-primary/70 disabled:cursor-not-allowed cursor-pointer text-white font-semibold py-4 px-4 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 font-body mt-4"
                   >
-                    Sign In
-                    <ArrowRightIcon />
+                    {isLoading ? (
+                      <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        Sign In
+                        <ArrowRightIcon />
+                      </>
+                    )}
                   </button>
                 </form>
+
+                {/* Google Login Divider & Button */}
+                <div className="mt-6">
+                  <div className="relative flex items-center mb-6">
+                    <div className="flex-grow border-t border-border/60"></div>
+                    <span className="flex-shrink-0 mx-4 text-text-secondary text-sm font-body">Or continue with</span>
+                    <div className="flex-grow border-t border-border/60"></div>
+                  </div>
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-center gap-3 bg-surface hover:bg-border/30 text-text-primary dark:text-surface font-semibold py-3.5 px-4 rounded-2xl border border-border dark:border-secondary transition-all duration-300 font-body cursor-pointer"
+                  >
+                    <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Google
+                  </button>
+                </div>
 
                 {/* Footer Link */}
                 <div className="mt-10 text-center">
