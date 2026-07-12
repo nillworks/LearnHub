@@ -18,7 +18,7 @@ import ThemeToggle from "@/shared/ThemeToggle";
 import ProfileDropdown from "@/shared/ProfileDropdown";
 
 // ─── Navigation Data ──────────────────────────────────────────────────────────
-const user = true;
+const user = false;
 
 const PUBLIC_NAV_ITEMS: NavItem[] = [
   { id: 1, label: "Home", href: "/" },
