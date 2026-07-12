@@ -1,26 +1,55 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* ============================================
+     PRIMARY COLOR — Sage Green (#86A788)
+  ============================================ */
+  --color-primary-light:        #f3f6f3;
+  --color-primary-light-hover:  #edf2ed;
+  --color-primary-light-active: #d9e4da;
+  --color-primary:              #86A788;
+  --color-primary-hover:        #79967a;
+  --color-primary-active:       #6b866d;
+  --color-primary-dark:         #657d66;
+  --color-primary-dark-hover:   #506452;
+  --color-primary-dark-active:  #3c4b3d;
+  --color-primary-darker:       #2f3a30;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* ============================================
+     SECONDARY COLOR — Warm Slate (#334155)
+  ============================================ */
+  --color-secondary:        #334155;
+  --color-secondary-light:  #64748b;
+  --color-secondary-lighter:#e2e8f0;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* ============================================
+     DANGER COLOR
+  ============================================ */
+  --color-danger-light:         #fff2f2;
+  --color-danger-light-hover:   #ffebeb;
+  --color-danger-light-active:  #fed5d5;
+  --color-danger:               #fd7979;
+  --color-danger-hover:         #e46d6d;
+  --color-danger-active:        #ca6161;
+  --color-danger-dark:          #be5b5b;
+  --color-danger-dark-hover:    #984949;
+  --color-danger-dark-active:   #723636;
+  --color-danger-darker:        #592a2a;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* ============================================
+     NEUTRAL / UI SYSTEM
+  ============================================ */
+  --color-white:          #ffffff;
+  --color-surface:        #f8fafc;
+  --color-border:         #e2e8f0;
+  --color-text-primary:   #1e293b;
+  --color-text-secondary: #64748b;
+  --color-dark-bg:        #0f172a;
+
+  /* ============================================
+     TYPOGRAPHY
+  ============================================ */
+  --font-heading: "Plus Jakarta Sans", sans-serif;
+  --font-body:    "Inter", sans-serif;
 }
