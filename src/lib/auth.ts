@@ -10,6 +10,17 @@ export const auth = betterAuth({
     client,
   }),
 
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "student",
+        input: false, // Security: prevent user from setting this during signup
+      }
+    }
+  },
+
   emailAndPassword: {
     enabled: true,
   },

@@ -14,7 +14,7 @@ interface ProfileDropdownProps {
   userLinks: {
     dashboard: { label: string; href: string };
     profile: { label: string; href: string };
-    logout: { label: string };
+    logout: { label: string; onClick?: () => void };
   };
 }
 
@@ -114,7 +114,10 @@ export default function ProfileDropdown({ user, userLinks }: ProfileDropdownProp
           <div className="p-2 border-t border-border/30 dark:border-secondary/30">
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                if (userLinks.logout.onClick) userLinks.logout.onClick();
+              }}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-danger-dark dark:hover:text-danger-light hover:bg-danger-light dark:hover:bg-danger-darker transition-all duration-200"
             >
               <LogOut size={16} />

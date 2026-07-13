@@ -68,10 +68,9 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData
       if (res?.error) {
         CustomToast('error', 'Login Failed', res.error)
       } else {
-        router.push('/')
-        router.refresh()
         CustomToast('success', 'Welcome Back!', 'You have successfully logged in.')
         formElement.reset()
+        window.location.href = '/'
       }
     } catch (error: any) {
       console.error('Login error:', error)

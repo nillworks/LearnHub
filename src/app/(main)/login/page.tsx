@@ -1,35 +1,35 @@
-import LoginForm, { LoginFormData, LoginResponse } from '@/components/authUi/LoginForm'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+"use client";
+
+import LoginForm, { LoginFormData, LoginResponse } from '@/components/authUi/LoginForm';
+import { signIn } from '@/lib/auth-client';
 
 const Page = () => {
   const handleLogin = async (formData: LoginFormData): Promise<LoginResponse> => {
-    "use server"
     try {
-      const data = await auth.api.signInEmail({
-        body: {
-          email: formData.email,
-          password: formData.password || '',
-          rememberMe: true, // You can configure this based on a checkbox if needed
-        },
-        headers: await headers(),
-      })
+      const { data, error } = await signIn.email({
+        email: formData.email,
+        password: formData.password || '',
+      });
       
+      if (error) {
+        return { error: error.message || 'Invalid email or password' };
+      }
+
       if (data) {
-        return { success: true }
+        return { success: true };
       }
     } catch (error: any) {
-      return { error: error.message || 'Invalid email or password' }
+      return { error: error.message || 'Invalid email or password' };
     }
     
-    return { error: 'Unknown error occurred' }
-  }
+    return { error: 'Unknown error occurred' };
+  };
 
   return (
     <div>
       <LoginForm onSubmit={handleLogin} />
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;

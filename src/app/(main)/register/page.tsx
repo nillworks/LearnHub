@@ -1,19 +1,21 @@
+"use client";
+
 import RegisterForm, { RegisterFormData, RegisterResponse } from '@/components/authUi/RegisterForm';
-import { auth } from '@/lib/auth';
+import { signUp } from '@/lib/auth-client';
 
 const Page = () => {
   const handleRegister = async (formData: RegisterFormData): Promise<RegisterResponse> => {
-    'use server';
     try {
-      const data = await auth.api.signUpEmail({
-        body: {
-          name: formData.name, // required
-          email: formData.email, // required
-          password: formData.password || formData.confirmPassword || '', // required
-          image: formData.profileImage,
-          callbackURL: '/',
-        },
+      const { data, error } = await signUp.email({
+        email: formData.email,
+        password: formData.password || formData.confirmPassword || '',
+        name: formData.name,
+        image: formData.profileImage,
       });
+
+      if (error) {
+        return { error: error.message || 'Something went wrong during registration.' };
+      }
 
       if (data) {
         return { success: true };

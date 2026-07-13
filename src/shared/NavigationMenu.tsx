@@ -3,22 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   GraduationCap,
-  LayoutDashboard,
-  LogOut,
-  LogIn,
 } from "@/shared/Icons";
 import { cn } from "@/lib/utils";
 import ActiveLink, { type NavItem } from "@/shared/ActiveLink";
 import MobileMenu from "@/shared/MobileMenu";
 import ThemeToggle from "@/shared/ThemeToggle";
 import ProfileDropdown from "@/shared/ProfileDropdown";
+import { useSession, signOut } from "@/lib/auth-client";
+import CustomToast from "@/shared/CustomToast";
 
 // ─── Navigation Data ──────────────────────────────────────────────────────────
-const user = false;
 
 const PUBLIC_NAV_ITEMS: NavItem[] = [
   { id: 1, label: "Home", href: "/" },
@@ -40,11 +38,7 @@ const AUTH_LINKS = {
   register: { label: "Register", href: "/register" },
 };
 
-const USER_LINKS = {
-  dashboard: { label: "Dashboard", href: "/dashboard" },
-  profile: { label: "Profile", href: "/profile" },
-  logout: { label: "Logout" },
-};
+// ─── Temporary Auth State (replace with real auth later) ──────────────────────
 
 // ─── Temporary Auth State (replace with real auth later) ──────────────────────
 
@@ -52,7 +46,7 @@ const USER_LINKS = {
 
 // ─── UserArea ─────────────────────────────────────────────────────────────────
 
-function UserArea() {
+function UserArea({ user, userLinks }: { user?: any, userLinks: any }) {
   if (!user) {
     return (
       <div className="flex items-center gap-3">
@@ -75,10 +69,10 @@ function UserArea() {
   return (
     <div className="flex items-center gap-2">
       <ProfileDropdown user={{ 
-        name: "John Doe", 
-        email: "john.doe@example.com", 
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
-      }} userLinks={USER_LINKS} />
+        name: user?.name || "User", 
+        email: user?.email || "", 
+        avatarUrl: user?.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" 
+      }} userLinks={userLinks} />
     </div>
   );
 }
@@ -88,8 +82,59 @@ function UserArea() {
 export default function NavigationMenu() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
-  const currentNavItems = user ? PRIVATE_NAV_ITEMS : PUBLIC_NAV_ITEMS;
+  const { data } = useSession();
+  const user = data?.user;
+
+  const dashboardHref: Record<string, string> = {
+    admin: '/dashboard/admin',
+    user: '/dashboard/user',
+    student: '/dashboard/student',
+    trainer: '/dashboard/trainer',
+  };
+
+  const handleSignOut = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          CustomToast(
+            'success',
+            'Signed out',
+            'You have been signed out successfully.',
+          );
+          router.push('/login');
+          router.refresh();
+        },
+      },
+    });
+  };
+
+  const dynamicUserLinks = {
+    dashboard: { 
+      label: "Dashboard", 
+      href: dashboardHref[(user?.role as string)?.toLowerCase()] || '/dashboard' 
+    },
+    profile: { label: "Profile", href: "/profile" },
+    logout: { label: "Logout", onClick: handleSignOut },
+  };
+
+  const currentNavItems = [
+    { id: 1, label: "Home", href: "/" },
+    { id: 2, label: "All Courses", href: "/courses" },
+    { id: 3, label: "Community Forum", href: "/forum" },
+    ...(user?.role
+      ? [
+          {
+            id: 4,
+            label: "Dashboard",
+            href: dashboardHref[(user.role as string)?.toLowerCase()] || "/",
+          },
+        ]
+      : []),
+    { id: 5, label: "About", href: "/about" },
+    { id: 6, label: "Contact", href: "/contact" },
+  ];
 
   return (
     <>
@@ -124,7 +169,7 @@ export default function NavigationMenu() {
             {/* ── Right: User + Hamburger ─────────── */}
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <UserArea />
+              <UserArea user={user} userLinks={dynamicUserLinks} />
 
               {/* Hamburger — mobile only */}
               <button
@@ -149,7 +194,7 @@ export default function NavigationMenu() {
         pathname={pathname}
         navItems={currentNavItems}
         authLinks={AUTH_LINKS}
-        userLinks={USER_LINKS}
+        userLinks={dynamicUserLinks}
         user={user}
       />
     </>

@@ -18,7 +18,7 @@ export interface MobileMenuProps {
   userLinks: {
     dashboard: { label: string; href: string };
     profile: { label: string; href: string };
-    logout: { label: string };
+    logout: { label: string; onClick?: () => void };
   };
   user: any; // Ideally replace 'any' with a User type when available
 }
@@ -136,7 +136,10 @@ export default function MobileMenu({
                   {userLinks.profile.label}
                 </Link>
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    onClose();
+                    if (userLinks.logout.onClick) userLinks.logout.onClick();
+                  }}
                   className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                 >
                   {userLinks.logout.label}
