@@ -4,10 +4,27 @@ import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { imageUpload } from "@/lib/imageUpload"
+import { useRouter } from "next/navigation"
+import { signOut } from "@/lib/auth-client"
 
 import { Eye as EyeIcon, EyeOff as EyeOffIcon, Mail as MailIcon, Lock as LockIcon, User as UserIcon, ArrowRight as ArrowRightIcon, Sparkles as SparklesIcon, Target as TargetIcon, Image as ImageIcon } from "lucide-react"
+import CustomToast from "@/shared/CustomToast"
 
-export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Promise<void> | void }) {
+export interface RegisterFormData {
+  name: string;
+  email: string;
+  password?: string;
+  confirmPassword?: string;
+  profileImage?: string;
+}
+
+export interface RegisterResponse {
+  success?: boolean;
+  error?: string;
+}
+
+export default function RegisterForm({ onSubmit }: { onSubmit: (data: RegisterFormData) => Promise<RegisterResponse> | RegisterResponse }) {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -20,7 +37,8 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
     email: '', 
     password: '', 
     confirmPassword: '',
-    profileImage: '' 
+    profileImage: '',
+    acceptTerms: ''
   })
 
   const handleClearError = (field: string) => {
@@ -47,7 +65,7 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
     const data = Object.fromEntries(formDataObj.entries())
     
     let hasError = false
-    const newErrors = { name: '', email: '', password: '', confirmPassword: '', profileImage: '' }
+    const newErrors = { name: '', email: '', password: '', confirmPassword: '', profileImage: '', acceptTerms: '' }
 
     if (!(data.name as string).trim()) {
       newErrors.name = 'Full name is required'
@@ -59,6 +77,11 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
       hasError = true
     } else if (!/\S+@\S+\.\S+/.test(data.email as string)) {
       newErrors.email = 'Invalid email address'
+      hasError = true
+    }
+
+    if (!profileImage) {
+      newErrors.profileImage = 'Profile image is required'
       hasError = true
     }
 
@@ -86,24 +109,54 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
       hasError = true
     }
 
+    if (!data.acceptTerms) {
+      newErrors.acceptTerms = 'You must accept the terms and conditions'
+      hasError = true
+    }
+
     if (hasError) {
       setErrors(newErrors)
       return
     }
 
     setIsLoading(true)
+    const formElement = e.currentTarget
     
     try {
       let imageUrl = 'none'
       if (profileImage) {
         const uploadResult = await imageUpload(profileImage)
-        imageUrl = uploadResult?.display_url || uploadResult?.url || uploadResult
+        
+        // Ensure we got a valid URL back
+        imageUrl = uploadResult?.display_url || uploadResult?.url || (typeof uploadResult === 'string' ? uploadResult : null)
+        
+        if (!imageUrl || imageUrl === 'none') {
+          CustomToast('error', 'Upload Failed', 'Could not upload the profile image. Please try another image.')
+          setIsLoading(false)
+          return
+        }
       }
       
-      const submitData = { ...data, profileImage: imageUrl }
-      await onSubmit(submitData)
-    } catch (error) {
-      console.error('Image upload failed:', error)
+      const submitData: RegisterFormData = { ...(data as any), profileImage: imageUrl }
+      const res = await onSubmit(submitData)
+      
+      if (res?.error) {
+        CustomToast('error', 'Registration Failed', res.error)
+      } else {
+        CustomToast('success', 'Account Created', 'Your account has been created successfully. Redirecting to login...')
+        formElement.reset()
+        setProfileImage(null)
+        setPreviewUrl(null)
+        setShowPassword(false)
+        setShowConfirmPassword(false)
+        
+        await signOut()
+        router.push('/login')
+        router.refresh()
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error)
+      CustomToast('error', 'Error', error.message || 'Something went wrong')
     } finally {
       setIsLoading(false)
     }
@@ -245,9 +298,13 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
-                        className="w-full pl-12 pr-4 py-2.5 bg-surface dark:bg-[#0f172a] border border-border dark:border-secondary rounded-2xl text-text-primary dark:text-surface focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 font-body file:mr-4 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary-dark hover:file:bg-primary-light-hover"
+                        className={cn(
+                          "w-full pl-12 pr-4 py-2.5 bg-surface dark:bg-[#0f172a] border rounded-2xl text-text-primary dark:text-surface focus:outline-none focus:ring-4 transition-all duration-300 font-body file:mr-4 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary-dark hover:file:bg-primary-light-hover",
+                          errors.profileImage ? "border-danger focus:ring-danger/10 focus:border-danger" : "border-border dark:border-secondary focus:ring-primary/10 focus:border-primary"
+                        )}
                       />
                     </div>
+                    {errors.profileImage && <p className="text-danger-dark text-xs font-semibold">{errors.profileImage}</p>}
                   </div>
 
                   {/* Password Field */}
@@ -312,6 +369,25 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
                       </button>
                     </div>
                     {errors.confirmPassword && <p className="text-danger-dark text-xs font-semibold">{errors.confirmPassword}</p>}
+                  </div>
+
+                  {/* Terms Checkbox */}
+                  <div className="space-y-1">
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center h-5 mt-0.5">
+                        <input
+                          id="acceptTerms"
+                          name="acceptTerms"
+                          type="checkbox"
+                          onChange={() => handleClearError('acceptTerms')}
+                          className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 focus:ring-2 bg-surface dark:bg-[#0f172a] cursor-pointer"
+                        />
+                      </div>
+                      <label htmlFor="acceptTerms" className="text-sm text-text-secondary font-body">
+                        I agree to the <Link href="#" className="text-primary hover:underline">Terms of Service</Link> and <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>
+                      </label>
+                    </div>
+                    {errors.acceptTerms && <p className="text-danger-dark text-xs font-semibold">{errors.acceptTerms}</p>}
                   </div>
 
                   {/* Submit Button */}

@@ -3,10 +3,23 @@
 import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+import CustomToast from "@/shared/CustomToast"
 
 import { Eye as EyeIcon, EyeOff as EyeOffIcon, Mail as MailIcon, Lock as LockIcon, ArrowRight as ArrowRightIcon, Sparkles as SparklesIcon, Target as TargetIcon } from "lucide-react"
 
-export default function LoginForm({ onSubmit }: { onSubmit: (data: any) => Promise<void> | void }) {
+export interface LoginFormData {
+  email: string;
+  password?: string;
+}
+
+export interface LoginResponse {
+  success?: boolean;
+  error?: string;
+}
+
+export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData) => Promise<LoginResponse> | LoginResponse }) {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   
@@ -46,9 +59,23 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: any) => Promi
     }
 
     setIsLoading(true)
+    const formElement = e.currentTarget
     
     try {
-      await onSubmit(data)
+      const submitData: LoginFormData = { email: data.email as string, password: data.password as string }
+      const res = await onSubmit(submitData)
+      
+      if (res?.error) {
+        CustomToast('error', 'Login Failed', res.error)
+      } else {
+        router.push('/')
+        router.refresh()
+        CustomToast('success', 'Welcome Back!', 'You have successfully logged in.')
+        formElement.reset()
+      }
+    } catch (error: any) {
+      console.error('Login error:', error)
+      CustomToast('error', 'Error', error.message || 'Something went wrong')
     } finally {
       setIsLoading(false)
     }
