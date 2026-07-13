@@ -45,18 +45,18 @@ export const studentDashboardLinks: DashboardNavItem[] = [
 ];
 
 export const instructorDashboardLinks: DashboardNavItem[] = [
-  { id: 1, title: "Overview", href: "/dashboard/trainer", icon: LayoutDashboard },
-  { id: 2, title: "My Courses", href: "/dashboard/trainer/courses", icon: BookOpen },
-  { id: 3, title: "Create Course", href: "/dashboard/trainer/create-course", icon: PlusCircle },
-  { id: 4, title: "Manage Lessons", href: "/dashboard/trainer/lessons", icon: Library },
-  { id: 5, title: "Students", href: "/dashboard/trainer/students", icon: Users },
-  { id: 6, title: "Q&A", href: "/dashboard/trainer/questions", icon: MessageSquare },
-  { id: 7, title: "Reviews", href: "/dashboard/trainer/reviews", icon: Star },
-  { id: 8, title: "Announcements", href: "/dashboard/trainer/announcements", icon: Megaphone },
-  { id: 9, title: "Course Support", href: "/dashboard/trainer/support", icon: LifeBuoy },
-  { id: 10, title: "Analytics & Revenue", href: "/dashboard/trainer/analytics", icon: BarChart3 },
-  { id: 11, title: "Notifications", href: "/dashboard/trainer/notifications", icon: Bell },
-  { id: 12, title: "Profile & Settings", href: "/dashboard/trainer/settings", icon: Settings },
+  { id: 1, title: "Overview", href: "/dashboard/instructor", icon: LayoutDashboard },
+  { id: 2, title: "My Courses", href: "/dashboard/instructor/courses", icon: BookOpen },
+  { id: 3, title: "Create Course", href: "/dashboard/instructor/create-course", icon: PlusCircle },
+  { id: 4, title: "Manage Lessons", href: "/dashboard/instructor/lessons", icon: Library },
+  { id: 5, title: "Students", href: "/dashboard/instructor/students", icon: Users },
+  { id: 6, title: "Q&A", href: "/dashboard/instructor/questions", icon: MessageSquare },
+  { id: 7, title: "Reviews", href: "/dashboard/instructor/reviews", icon: Star },
+  { id: 8, title: "Announcements", href: "/dashboard/instructor/announcements", icon: Megaphone },
+  { id: 9, title: "Course Support", href: "/dashboard/instructor/support", icon: LifeBuoy },
+  { id: 10, title: "Analytics & Revenue", href: "/dashboard/instructor/analytics", icon: BarChart3 },
+  { id: 11, title: "Notifications", href: "/dashboard/instructor/notifications", icon: Bell },
+  { id: 12, title: "Profile & Settings", href: "/dashboard/instructor/settings", icon: Settings },
 ];
 
 export const adminDashboardLinks: DashboardNavItem[] = [

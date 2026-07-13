@@ -84,9 +84,8 @@ export default function NavigationMenu({ user }: { user?: any }) {
 
   const dashboardHref: Record<string, string> = {
     admin: '/dashboard/admin',
-    user: '/dashboard/user',
     student: '/dashboard/student',
-    trainer: '/dashboard/trainer',
+    instructor: '/dashboard/instructor',
   };
 
   const handleSignOut = async () => {
@@ -117,18 +116,18 @@ export default function NavigationMenu({ user }: { user?: any }) {
   const currentNavItems = [
     { id: 1, label: "Home", href: "/" },
     { id: 2, label: "All Courses", href: "/courses" },
-    { id: 3, label: "Community Forum", href: "/forum" },
+    { id: 3, label: "About", href: "/about" },
+    { id: 4, label: "Community Forum", href: "/forum" },
+    { id: 5, label: "Contact", href: "/contact" },
     ...(user?.role
       ? [
           {
-            id: 4,
+            id: 6,
             label: "Dashboard",
             href: dashboardHref[(user.role as string)?.toLowerCase()] || "/",
           },
         ]
       : []),
-    { id: 5, label: "About", href: "/about" },
-    { id: 6, label: "Contact", href: "/contact" },
   ];
 
   return (

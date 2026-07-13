@@ -32,7 +32,7 @@ interface SidebarContentProps {
 const getNavLinks = (role?: string) => {
   const baseRole = role?.toLowerCase() || 'student';
   if (baseRole === 'admin') return adminDashboardLinks;
-  if (baseRole === 'trainer' || baseRole === 'instructor') return instructorDashboardLinks;
+  if (baseRole === 'instructor' || baseRole === 'instructor') return instructorDashboardLinks;
   return studentDashboardLinks;
 };
 
