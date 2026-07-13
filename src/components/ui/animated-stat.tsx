@@ -6,10 +6,11 @@ import { motion, useInView, useMotionValue, useSpring, useTransform } from "fram
 interface AnimatedStatProps {
   value: number;
   suffix?: string;
+  decimals?: number;
   className?: string;
 }
 
-export function AnimatedStat({ value, suffix = "", className = "" }: AnimatedStatProps) {
+export function AnimatedStat({ value, suffix = "", decimals = 0, className = "" }: AnimatedStatProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10px" });
   
@@ -20,7 +21,12 @@ export function AnimatedStat({ value, suffix = "", className = "" }: AnimatedSta
     stiffness: 100,
   });
 
-  const display = useTransform(springValue, (latest) => Math.round(latest) + suffix);
+  const display = useTransform(springValue, (latest) => {
+    if (decimals > 0) {
+      return latest.toFixed(decimals) + suffix;
+    }
+    return Math.round(latest) + suffix;
+  });
 
   useEffect(() => {
     if (isInView) {
