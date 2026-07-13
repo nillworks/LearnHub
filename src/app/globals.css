@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -50,6 +52,64 @@
   /* ============================================
      TYPOGRAPHY
   ============================================ */
-  --font-heading: "Plus Jakarta Sans", sans-serif;
-  --font-body:    "Inter", sans-serif;
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+
+  /* ============================================
+     SHADCN COMPATIBILITY
+  ============================================ */
+  --color-destructive: var(--color-danger);
+  --color-destructive-foreground: var(--color-white);
+  --color-primary-foreground: var(--color-white);
+  --color-secondary-foreground: var(--color-white);
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: var(--color-text-secondary);
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: var(--color-text-primary);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-text-primary);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-text-primary);
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-text-primary);
+  --color-ring: var(--color-primary-light);
+  --color-input: var(--color-border);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  --radius: 0.75rem;
+}
+
+.dark {
+  --color-background: var(--color-dark-bg);
+  --color-foreground: var(--color-surface);
+  --color-popover: var(--color-dark-bg);
+  --color-popover-foreground: var(--color-surface);
+  --color-card: var(--color-dark-bg);
+  --color-card-foreground: var(--color-surface);
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-accent: #1e293b;
+  --color-accent-foreground: var(--color-surface);
+  --color-border: #334155;
+  --color-input: #334155;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-surface text-text-primary;
+  }
+  .dark body {
+    @apply bg-dark-bg text-surface;
+  }
+  html {
+    @apply font-body;
+  }
 }

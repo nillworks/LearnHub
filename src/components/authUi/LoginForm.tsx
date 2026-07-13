@@ -4,72 +4,45 @@ import Link from "next/link"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import CustomToast from "@/shared/CustomToast"
+import CustomToast from "@/components/shared/CustomToast"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { loginSchema, type LoginInput } from "@/schemas/auth"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 import { Eye as EyeIcon, EyeOff as EyeOffIcon, Mail as MailIcon, Lock as LockIcon, ArrowRight as ArrowRightIcon, Sparkles as SparklesIcon, Target as TargetIcon } from "lucide-react"
-
-export interface LoginFormData {
-  email: string;
-  password?: string;
-}
 
 export interface LoginResponse {
   success?: boolean;
   error?: string;
 }
 
-export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData) => Promise<LoginResponse> | LoginResponse }) {
+export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginInput) => Promise<LoginResponse> | LoginResponse }) {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   
-  const [errors, setErrors] = useState({ email: '', password: '' })
+  const form = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  })
 
-  const handleClearError = (field: string) => {
-    if (errors[field as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    
-    const formDataObj = new FormData(e.currentTarget)
-    const data = Object.fromEntries(formDataObj.entries())
-    
-    let hasError = false
-    const newErrors = { email: '', password: '' }
-
-    if (!data.email) {
-      newErrors.email = 'Email is required'
-      hasError = true
-    } else if (!/\S+@\S+\.\S+/.test(data.email as string)) {
-      newErrors.email = 'Invalid email address'
-      hasError = true
-    }
-
-    if (!data.password) {
-      newErrors.password = 'Password is required'
-      hasError = true
-    }
-
-    if (hasError) {
-      setErrors(newErrors)
-      return
-    }
-
+  const handleSubmit = async (data: LoginInput) => {
     setIsLoading(true)
-    const formElement = e.currentTarget
     
     try {
-      const submitData: LoginFormData = { email: data.email as string, password: data.password as string }
-      const res = await onSubmit(submitData)
+      const res = await onSubmit(data)
       
       if (res?.error) {
         CustomToast('error', 'Login Failed', res.error)
       } else {
         CustomToast('success', 'Welcome Back!', 'You have successfully logged in.')
-        formElement.reset()
+        form.reset()
         window.location.href = '/'
       }
     } catch (error: any) {
@@ -95,12 +68,12 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData
           {/* Left Column: Visuals & Copy */}
           <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1 pr-0 lg:pr-12 xl:pr-24">
             
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white dark:bg-[#1e293b] border border-border/60 shadow-sm text-text-secondary dark:text-surface font-medium text-sm mb-10 w-fit">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary-light dark:bg-primary-darker/50 border border-secondary-lighter dark:border-secondary shadow-sm text-primary-dark dark:text-primary-light font-medium text-sm mb-10 w-fit">
               <span className="h-2 w-2 rounded-full bg-primary"></span>
               Welcome back to LearnHub
             </div>
             
-            <h1 className="text-[2.75rem] sm:text-6xl lg:text-[4rem] font-heading font-bold text-text-primary dark:text-surface tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-[2.75rem] sm:text-6xl lg:text-[4rem] font-heading font-bold text-secondary dark:text-surface tracking-tight leading-[1.1] mb-6">
               Pick up right where you <br className="hidden sm:block" />
               <span className="text-primary relative inline-block mt-1">
                 left off.
@@ -114,19 +87,19 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData
             
             {/* Feature Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-border/40 group">
+              <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-secondary-lighter dark:border-secondary group">
                 <div className="w-12 h-12 rounded-[1rem] bg-surface dark:bg-dark-bg flex items-center justify-center text-primary-dark dark:text-primary-light mb-6 group-hover:scale-110 transition-transform duration-300">
                   <SparklesIcon className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading font-bold text-xl text-text-primary dark:text-surface mb-3">Resume Courses</h3>
+                <h3 className="font-heading font-bold text-xl text-secondary dark:text-surface mb-3">Resume Courses</h3>
                 <p className="text-text-secondary font-body leading-relaxed text-[15px]">Jump back into your active lessons seamlessly without missing a beat.</p>
               </div>
               
-              <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-border/40 group">
+              <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-secondary-lighter dark:border-secondary group">
                 <div className="w-12 h-12 rounded-[1rem] bg-surface dark:bg-dark-bg flex items-center justify-center text-primary-dark dark:text-primary-light mb-6 group-hover:scale-110 transition-transform duration-300">
                   <TargetIcon className="w-5 h-5" />
                 </div>
-                <h3 className="font-heading font-bold text-xl text-text-primary dark:text-surface mb-3">Track Progress</h3>
+                <h3 className="font-heading font-bold text-xl text-secondary dark:text-surface mb-3">Track Progress</h3>
                 <p className="text-text-secondary font-body leading-relaxed text-[15px]">Keep your daily learning streak alive and hit your weekly goals.</p>
               </div>
             </div>
@@ -134,14 +107,14 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData
 
           {/* Right Column: Form Card */}
           <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end">
-            <div className="w-full bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-border/50 relative overflow-hidden group/card">
+            <div className="w-full bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-secondary-lighter dark:border-secondary relative overflow-hidden group/card">
               
               {/* Subtle inner glow for premium feel */}
               <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-light/50 dark:bg-primary-darker/50 rounded-full blur-3xl pointer-events-none opacity-50 group-hover/card:opacity-100 transition-opacity duration-700"></div>
               
               <div className="relative z-10">
                 <div className="mb-10">
-                  <h2 className="text-3xl font-heading font-bold text-text-primary dark:text-surface tracking-tight mb-3">
+                  <h2 className="text-3xl font-heading font-bold text-secondary dark:text-surface tracking-tight mb-3">
                     Sign In
                   </h2>
                   <p className="text-text-secondary font-body leading-relaxed">
@@ -149,88 +122,96 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData
                   </p>
                 </div>
 
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                  
-                  {/* Email Field */}
-                  <div className="space-y-2.5">
-                    <label htmlFor="email" className="block text-sm font-semibold text-text-primary dark:text-surface font-body">
-                      Email Address
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-secondary group-focus-within:text-primary transition-colors duration-300">
-                        <MailIcon />
-                      </div>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        onChange={() => handleClearError('email')}
-                        placeholder="e.g., alex@company.com"
-                        className={cn(
-                          "w-full pl-12 pr-4 py-3.5 bg-surface dark:bg-[#0f172a] border rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus:outline-none focus:ring-4 transition-all duration-300 font-body",
-                          errors.email ? "border-danger focus:ring-danger/10 focus:border-danger" : "border-border dark:border-secondary focus:ring-primary/10 focus:border-primary"
-                        )}
-                      />
-                    </div>
-                    {errors.email && <p className="text-danger-dark text-xs font-semibold">{errors.email}</p>}
-                  </div>
+                <Form {...form}>
+                  <form className="space-y-6" onSubmit={form.handleSubmit(handleSubmit)}>
+                    
+                    {/* Email Field */}
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2.5">
+                          <FormLabel className="block text-sm font-semibold text-text-primary dark:text-surface font-body">
+                            Email Address
+                          </FormLabel>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-secondary group-focus-within:text-primary transition-colors duration-300">
+                              <MailIcon />
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder="e.g., alex@company.com"
+                                className="w-full pl-12 pr-4 py-6 bg-surface dark:bg-[#0f172a] border-secondary-lighter dark:border-secondary rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 font-body"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage className="text-danger-dark text-xs font-semibold" />
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Password Field */}
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <label htmlFor="password" className="block text-sm font-semibold text-text-primary dark:text-surface font-body">
-                        Password
-                      </label>
-                      <Link 
-                        href="/forgot-password" 
-                        className="text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-secondary group-focus-within:text-primary transition-colors duration-300">
-                        <LockIcon />
-                      </div>
-                      <input
-                        id="password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        onChange={() => handleClearError('password')}
-                        placeholder="Enter your password"
-                        className={cn(
-                          "w-full pl-12 pr-12 py-3.5 bg-surface dark:bg-[#0f172a] border rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus:outline-none focus:ring-4 transition-all duration-300 font-body",
-                          errors.password ? "border-danger focus:ring-danger/10 focus:border-danger" : "border-border dark:border-secondary focus:ring-primary/10 focus:border-primary"
-                        )}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-secondary hover:text-text-primary dark:hover:text-surface transition-colors focus:outline-none"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                      </button>
-                    </div>
-                    {errors.password && <p className="text-danger-dark text-xs font-semibold">{errors.password}</p>}
-                  </div>
+                    {/* Password Field */}
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <FormLabel className="block text-sm font-semibold text-text-primary dark:text-surface font-body">
+                              Password
+                            </FormLabel>
+                            <Link 
+                              href="/forgot-password" 
+                              className="text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
+                            >
+                              Forgot password?
+                            </Link>
+                          </div>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-secondary group-focus-within:text-primary transition-colors duration-300">
+                              <LockIcon />
+                            </div>
+                            <FormControl>
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter your password"
+                                className="w-full pl-12 pr-12 py-6 bg-surface dark:bg-[#0f172a] border-secondary-lighter dark:border-secondary rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 font-body"
+                                {...field}
+                              />
+                            </FormControl>
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-secondary hover:text-text-primary dark:hover:text-surface transition-colors focus:outline-none"
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            </button>
+                          </div>
+                          <FormMessage className="text-danger-dark text-xs font-semibold" />
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary-active disabled:bg-primary/70 disabled:cursor-not-allowed cursor-pointer text-white font-semibold py-4 px-4 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 font-body mt-4"
-                  >
-                    {isLoading ? (
-                      <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    ) : (
-                      <>
-                        Sign In
-                        <ArrowRightIcon />
-                      </>
-                    )}
-                  </button>
-                </form>
+                    {/* Submit Button */}
+                    <Button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary-active disabled:bg-primary/70 disabled:cursor-not-allowed cursor-pointer text-white font-semibold py-6 px-4 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 font-body mt-4"
+                    >
+                      {isLoading ? (
+                        <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      ) : (
+                        <>
+                          Sign In
+                          <ArrowRightIcon />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
 
                 {/* Google Login Divider & Button */}
                 <div className="mt-6">
@@ -241,7 +222,7 @@ export default function LoginForm({ onSubmit }: { onSubmit: (data: LoginFormData
                   </div>
                   <button
                     type="button"
-                    className="w-full flex items-center justify-center gap-3 bg-surface hover:bg-border/30 text-text-primary dark:text-surface font-semibold py-3.5 px-4 rounded-2xl border border-border dark:border-secondary transition-all duration-300 font-body cursor-pointer"
+                    className="w-full flex items-center justify-center gap-3 bg-surface hover:bg-secondary-lighter/30 text-secondary dark:text-surface font-semibold py-3.5 px-4 rounded-2xl border border-secondary-lighter dark:border-secondary transition-all duration-300 font-body cursor-pointer"
                   >
                     <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

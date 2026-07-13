@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import TopBardDashBoard from '@/shared/TopBardDashBoard';
-import SidebarContent from '@/shared/SidebarContent';
+import React from 'react';
+import TopBardDashBoard from '@/components/shared/TopBardDashBoard';
+import SidebarContent from '@/components/shared/SidebarContent';
 import { useSession } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { data, isPending } = useSession();
   const user = data?.user;
 
@@ -20,24 +20,17 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background dark:bg-dark-bg text-text-primary dark:text-surface">
-      <SidebarContent 
-        user={user} 
-        isMobileOpen={isMobileOpen} 
-        setIsMobileOpen={setIsMobileOpen} 
-      />
-      <div className="lg:ml-[280px] flex flex-col min-h-screen transition-all duration-300 relative z-10">
-        <TopBardDashBoard
-          user={user} 
-          onMenuClick={() => setIsMobileOpen(true)} 
-        />
+    <SidebarProvider>
+      <SidebarContent user={user} />
+      <SidebarInset className="flex flex-col min-h-screen transition-all duration-300 relative z-10 bg-background dark:bg-dark-bg">
+        <TopBardDashBoard user={user} />
         <main className="flex-1 p-6 lg:p-8 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto text-text-primary dark:text-surface">
             {children}
           </div>
         </main>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 

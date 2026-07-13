@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { LayoutDashboard, LogOut, User } from "@/shared/Icons";
+import { LayoutDashboard, LogOut, User } from "@/components/shared/Icons";
 
 interface ProfileDropdownProps {
   user: {

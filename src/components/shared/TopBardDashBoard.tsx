@@ -2,20 +2,19 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, ArrowLeft, Bell } from 'lucide-react';
-import ThemeToggle from '@/shared/ThemeToggle';
-import ProfileDropdown from '@/shared/ProfileDropdown';
+import { ArrowLeft, Bell, Menu, PanelLeft } from 'lucide-react';
+import ThemeToggle from '@/components/shared/ThemeToggle';
+import ProfileDropdown from '@/components/shared/ProfileDropdown';
+import { useSidebar } from '@/components/ui/sidebar';
 
 interface TopBardDashBoardProps {
   user: any;
-  onMenuClick: () => void;
 }
-
-const TopBardDashBoard = ({ user, onMenuClick }: TopBardDashBoardProps) => {
+const TopBardDashBoard = ({ user }: TopBardDashBoardProps) => {
   const pathname = usePathname();
   const roleName = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Student';
+  const { toggleSidebar, isMobile } = useSidebar();
   
   // Basic breadcrumb generation based on pathname
   const pathSegments = pathname.split('/').filter(Boolean);
@@ -26,7 +25,7 @@ const TopBardDashBoard = ({ user, onMenuClick }: TopBardDashBoardProps) => {
   const userLinks = {
     dashboard: { label: "Dashboard", href: `/dashboard/${user?.role?.toLowerCase() || 'student'}` },
     profile: { label: "Profile", href: "/profile" },
-    logout: { label: "Logout", onClick: () => window.location.href = '/login' }, // Handle logout via ProfileDropdown if needed, but sidebar has it. We will redirect to let auth trigger. Better yet, we can omit logout logic here if they use sidebar, but dropdown expects it.
+    logout: { label: "Logout", onClick: () => window.location.href = '/login' }, 
   };
 
   return (
@@ -36,11 +35,11 @@ const TopBardDashBoard = ({ user, onMenuClick }: TopBardDashBoardProps) => {
         {/* Left Side: Hamburger & Breadcrumbs */}
         <div className="flex items-center gap-4">
           <button 
-            onClick={onMenuClick}
-            className="lg:hidden p-2 text-text-secondary hover:text-primary hover:bg-primary-light rounded-xl transition-colors"
-            aria-label="Open Mobile Menu"
+            onClick={toggleSidebar}
+            className="p-2 -ml-2 text-text-secondary hover:text-primary hover:bg-primary-light rounded-xl transition-colors cursor-pointer"
+            aria-label="Toggle Menu"
           >
-            <Menu className="w-5 h-5" />
+            {isMobile ? <Menu className="w-5 h-5" /> : <PanelLeft className="w-5 h-5" />}
           </button>
           
           <div className="hidden sm:block">

@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { X, LogIn, User } from "@/shared/Icons";
-import ActiveLink, { type NavItem } from "@/shared/ActiveLink";
+import { X, LogIn, User } from "@/components/shared/Icons";
+import ActiveLink, { type NavItem } from "@/components/shared/ActiveLink";
 import { cn } from "@/lib/utils";
 
 export interface MobileMenuProps {

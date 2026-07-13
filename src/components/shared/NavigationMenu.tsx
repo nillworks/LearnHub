@@ -2,19 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   GraduationCap,
-} from "@/shared/Icons";
+} from "@/components/shared/Icons";
 import { cn } from "@/lib/utils";
-import ActiveLink, { type NavItem } from "@/shared/ActiveLink";
-import MobileMenu from "@/shared/MobileMenu";
-import ThemeToggle from "@/shared/ThemeToggle";
-import ProfileDropdown from "@/shared/ProfileDropdown";
-import { useSession, signOut } from "@/lib/auth-client";
-import CustomToast from "@/shared/CustomToast";
+import ActiveLink, { type NavItem } from "@/components/shared/ActiveLink";
+import MobileMenu from "@/components/shared/MobileMenu";
+import ThemeToggle from "@/components/shared/ThemeToggle";
+import ProfileDropdown from "@/components/shared/ProfileDropdown";
+import { signOut } from "@/lib/auth-client";
+import CustomToast from "@/components/shared/CustomToast";
 
 // ─── Navigation Data ──────────────────────────────────────────────────────────
 
@@ -37,11 +36,6 @@ const AUTH_LINKS = {
   login: { label: "Login", href: "/login" },
   register: { label: "Register", href: "/register" },
 };
-
-// ─── Temporary Auth State (replace with real auth later) ──────────────────────
-
-// ─── Temporary Auth State (replace with real auth later) ──────────────────────
-
 
 
 // ─── UserArea ─────────────────────────────────────────────────────────────────
@@ -79,7 +73,7 @@ function UserArea({ user, userLinks }: { user?: any, userLinks: any }) {
 
 // ─── NavigationMenu ───────────────────────────────────────────────────────────
 
-export default function NavigationMenu() {
+export default function NavigationMenu({ user }: { user?: any }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -87,9 +81,6 @@ export default function NavigationMenu() {
   if (pathname?.startsWith("/dashboard")) {
     return null;
   }
-
-  const { data } = useSession();
-  const user = data?.user;
 
   const dashboardHref: Record<string, string> = {
     admin: '/dashboard/admin',
