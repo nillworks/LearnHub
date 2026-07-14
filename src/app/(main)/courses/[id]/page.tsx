@@ -1,3 +1,4 @@
+import CourseDetailsPage from "@/components/CourseDetailsPage/CourseDetailsPage";
 import getSingleCourse from "@/lib/api/getSingleCourse";
 
 type Props = {
@@ -11,10 +12,14 @@ const page = async ({ params }: Props) => {
 
   console.log(course);
 
+  if (!course) {
+    return <div className="p-20 text-center text-red-500">Course not found</div>;
+  }
+
   return (
-    <div>
-      
-    </div>
+    <section>
+      <CourseDetailsPage course={course} />
+    </section>
   )
 }
 
