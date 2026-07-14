@@ -36,6 +36,10 @@ const CourseCard = ({
   lessons = 42,
   avgRating,
 }: CourseCardProps) => {
+  const hasDiscount = discountPrice && discountPrice > 0;
+  const finalPrice = hasDiscount ? (price - discountPrice) : price;
+  const discountPercent = hasDiscount ? Math.round((discountPrice / price) * 100) : 0;
+
   return (
     <Link href={`/courses/${id}`} className="block h-full group">
       <div className="bg-white dark:bg-[#1e293b] border border-secondary-lighter dark:border-secondary rounded-3xl overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full relative">
@@ -70,9 +74,9 @@ const CourseCard = ({
               <span className="bg-primary text-white font-heading font-bold text-sm rounded-xl px-3 py-1.5 shadow-sm">
                 FREE
               </span>
-            ) : discountPrice ? (
+            ) : hasDiscount ? (
               <div className="bg-secondary text-white rounded-xl px-3 py-1.5 shadow-sm flex items-center">
-                <span className="font-bold text-sm">${discountPrice}</span>
+                <span className="font-bold text-sm">${typeof finalPrice === 'number' ? finalPrice.toFixed(2) : finalPrice}</span>
                 <span className="line-through text-white/60 text-xs ml-1">${price}</span>
               </div>
             ) : (
@@ -112,34 +116,32 @@ const CourseCard = ({
           </p>
 
           {/* Instructor row */}
-          <div className="flex items-center gap-2 mb-4">
-            <Image
+          <div className="flex items-center gap-2 mb-4 overflow-hidden">
+            <img
               src={instructorAvatar}
-              alt={instructorName}
-              width={28}
-              height={28}
-              className="w-7 h-7 rounded-full border-2 border-primary-light object-cover"
+              alt=""
+              className="w-7 h-7 rounded-full border-2 border-primary-light object-cover shrink-0"
             />
-            <span className="text-secondary dark:text-surface text-xs font-medium">
+            <span className="text-secondary dark:text-surface text-xs font-medium truncate">
               {instructorName}
             </span>
-            <span className="text-text-secondary text-xs">·</span>
-            <span className="text-text-secondary text-xs">Instructor</span>
+            <span className="text-text-secondary text-xs shrink-0">·</span>
+            <span className="text-text-secondary text-xs shrink-0">Instructor</span>
           </div>
 
           {/* Stats row */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-1 text-text-secondary text-xs">
-              <Users className="size-3.5 text-primary" />
-              <span>{studentsEnrolled?.toLocaleString() || 0} students</span>
+              <Users className="size-3.5 text-primary shrink-0" />
+              <span className="truncate">{(studentsEnrolled ?? 0).toLocaleString()} students</span>
             </div>
             <div className="flex items-center gap-1 text-text-secondary text-xs">
               <Clock className="size-3.5 text-primary" />
               <span>{estimatedDuration}</span>
             </div>
             <div className="flex items-center gap-1 text-text-secondary text-xs">
-              <BookOpen className="size-3.5 text-primary" />
-              <span>{lessons} lessons</span>
+              <BookOpen className="size-3.5 text-primary shrink-0" />
+              <span className="truncate">{lessons ?? 0} lessons</span>
             </div>
           </div>
 
@@ -151,16 +153,16 @@ const CourseCard = ({
             <div className="flex items-center">
               {isFree ? (
                 <span className="font-heading font-bold text-primary text-lg">Free</span>
-              ) : discountPrice ? (
+              ) : hasDiscount ? (
                 <div className="flex items-center">
                   <span className="font-heading font-bold text-secondary dark:text-surface text-lg">
-                    ${discountPrice}
+                    ${typeof finalPrice === 'number' ? finalPrice.toFixed(2) : finalPrice}
                   </span>
                   <span className="text-text-secondary text-xs line-through ml-2">
                     ${price}
                   </span>
                   <span className="bg-primary-light text-primary-dark text-[10px] rounded-full px-2 py-0.5 font-semibold ml-2">
-                    {Math.round(((price - discountPrice) / price) * 100)}% off
+                    {discountPercent}% off
                   </span>
                 </div>
               ) : (

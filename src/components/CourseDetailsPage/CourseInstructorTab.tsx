@@ -10,12 +10,20 @@ export const CourseInstructorTab = ({ course }: { course: any }) => {
       </h2>
       <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 md:p-8 border border-secondary-lighter dark:border-secondary shadow-sm">
         <div className="flex flex-col sm:flex-row gap-6 mb-8">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary flex items-center justify-center text-white font-bold text-4xl border-4 border-primary-light/30 shrink-0">
-            I
-          </div>
+          {course.image ? (
+            <img
+              src={course.image}
+              alt={course.instructorName || "Instructor"}
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-primary-light/30 shrink-0"
+            />
+          ) : (
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary flex items-center justify-center text-white font-bold text-4xl border-4 border-primary-light/30 shrink-0">
+              {course.instructorName ? course.instructorName.charAt(0).toUpperCase() : 'I'}
+            </div>
+          )}
           <div>
             <h3 className="text-2xl font-heading font-bold text-secondary dark:text-surface mb-1">
-              Instructor Name
+              {course.instructorName || "Instructor Name"}
             </h3>
             <p className="text-text-secondary text-sm mb-4">
               Senior Digital Marketing Expert
@@ -57,13 +65,58 @@ export const CourseInstructorTab = ({ course }: { course: any }) => {
           <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
             {/* Using mock courses for the horizontal scrollable row */}
             <div className="min-w-[280px] max-w-[280px] snap-start">
-              <CourseCard course={{...course, title: "Advanced SEO Techniques", _id: "1"}} />
+              <CourseCard
+                id="1"
+                title="Advanced SEO Techniques"
+                thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
+                category={course?.category || 'Marketing'}
+                difficulty={course?.difficulty || 'Beginner'}
+                instructorName={course?.instructorName || 'Instructor'}
+                instructorAvatar={course?.instructorAvatar || 'https://i.pravatar.cc/150?u=1'}
+                price={course?.price || 0}
+                discountPrice={course?.discountPrice}
+                isFree={course?.isFree}
+                studentsEnrolled={course?.studentEnroll ?? 0}
+                estimatedDuration={course?.estimatedDuration}
+                lessons={course?.lessons ?? 0}
+                avgRating={course?.rating ?? 0}
+              />
             </div>
             <div className="min-w-[280px] max-w-[280px] snap-start">
-              <CourseCard course={{...course, title: "Social Media Masterclass", _id: "2"}} />
+              <CourseCard
+                id="2"
+                title="Social Media Masterclass"
+                thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
+                category={course?.category || 'Marketing'}
+                difficulty={course?.difficulty || 'Beginner'}
+                instructorName={course?.instructorName || 'Instructor'}
+                instructorAvatar={course?.instructorAvatar || 'https://i.pravatar.cc/150?u=2'}
+                price={course?.price || 0}
+                discountPrice={course?.discountPrice}
+                isFree={course?.isFree}
+                studentsEnrolled={course?.studentEnroll ?? 0}
+                estimatedDuration={course?.estimatedDuration}
+                lessons={course?.lessons ?? 0}
+                avgRating={course?.rating ?? 0}
+              />
             </div>
             <div className="min-w-[280px] max-w-[280px] snap-start">
-              <CourseCard course={{...course, title: "Content Marketing 101", _id: "3"}} />
+              <CourseCard
+                id="3"
+                title="Content Marketing 101"
+                thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
+                category={course?.category || 'Marketing'}
+                difficulty={course?.difficulty || 'Beginner'}
+                instructorName={course?.instructorName || 'Instructor'}
+                instructorAvatar={course?.instructorAvatar || 'https://i.pravatar.cc/150?u=3'}
+                price={course?.price || 0}
+                discountPrice={course?.discountPrice}
+                isFree={course?.isFree}
+                studentsEnrolled={course?.studentEnroll ?? 0}
+                estimatedDuration={course?.estimatedDuration}
+                lessons={course?.lessons ?? 0}
+                avgRating={course?.rating ?? 0}
+              />
             </div>
           </div>
         </div>

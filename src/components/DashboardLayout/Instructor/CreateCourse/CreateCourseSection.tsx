@@ -2,13 +2,28 @@ import React from "react";
 import { ChevronRight } from "lucide-react";
 import CreateCourseFrom from "./CreateCourseFrom";
 import { createCoursePostApi } from "@/lib/api/createCoursePostApi";
+import getUserSession from "@/lib/getUserSection";
 
-const CreateCourseSection = () => {
+const CreateCourseSection = async () => {
+
+  const user= await getUserSession()
   
   // Rule 32: Create the submit handler or server action in the parent/server component.
   const handleCourseSubmit = async (data: any, status: "draft" | "published") => {
     "use server";
-    return await createCoursePostApi(data, status);
+
+    const coursePost = {
+      ...data,
+      image: user?.image,
+      instructorName: user?.name,
+      role: user?.role,
+      studentEnroll: 0,
+      lessons: 0,
+      rating: 0,
+      totalReviews: 0,
+    }
+
+    return await createCoursePostApi(coursePost, status);
   };
 
   return (

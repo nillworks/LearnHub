@@ -11,9 +11,10 @@ const getVal = (field: any, defaultVal: string) => {
 
 export const CoursePurchaseCard = ({ course, className }: { course: any, className?: string }) => {
   const price = course.price || 42;
-  const discountPrice = course.discountPrice || 2;
-  const discountPercent = Math.round(((price - discountPrice) / price) * 100);
-  const saveAmount = (price - discountPrice).toFixed(2);
+  const discountAmount = course.discountPrice || 0;
+  const finalPrice = price - discountAmount;
+  const discountPercent = discountAmount > 0 ? Math.round((discountAmount / price) * 100) : 0;
+  const saveAmount = discountAmount.toFixed(2);
 
   return (
     <div className={cn("bg-white dark:bg-[#1e293b] rounded-3xl overflow-hidden shadow-sm border border-secondary-lighter dark:border-secondary sticky top-6", className)}>
@@ -42,24 +43,30 @@ export const CoursePurchaseCard = ({ course, className }: { course: any, classNa
         <div className="mb-6">
           <div className="flex items-end gap-3 mb-1">
             <span className="text-4xl font-heading font-bold text-secondary dark:text-surface">
-              ${discountPrice}
+              ${finalPrice.toFixed(2)}
             </span>
-            <span className="text-text-secondary text-lg line-through mb-1">
-              ${price}
-            </span>
-            <span className="bg-primary/10 text-primary-dark font-semibold px-2 py-0.5 rounded text-sm mb-1">
-              {discountPercent}% OFF
-            </span>
+            {discountAmount > 0 && (
+              <>
+                <span className="text-text-secondary text-lg line-through mb-1">
+                  ${price}
+                </span>
+                <span className="bg-primary/10 text-primary-dark font-semibold px-2 py-0.5 rounded text-sm mb-1">
+                  {discountPercent}% OFF
+                </span>
+              </>
+            )}
           </div>
-          <p className="text-primary font-medium text-sm">
-            You save ${saveAmount}
-          </p>
+          {discountAmount > 0 && (
+            <p className="text-primary font-medium text-sm">
+              You save ${saveAmount}
+            </p>
+          )}
         </div>
 
         {/* Action Buttons */}
         <div className="space-y-3 mb-6">
           <button className="w-full bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-lg rounded-xl py-3.5 transition-colors duration-200">
-            Enroll Now — ${discountPrice.toFixed(2)}
+            Enroll Now — ${finalPrice.toFixed(2)}
           </button>
           <button className="w-full bg-transparent hover:bg-primary-light border border-secondary-lighter dark:border-secondary text-text-primary dark:text-surface font-semibold text-base rounded-xl py-3.5 flex items-center justify-center gap-2 transition-colors duration-200">
             <Heart className="size-5" />

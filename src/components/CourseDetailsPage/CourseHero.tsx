@@ -98,11 +98,19 @@ export const CourseHero = ({ course }: { course: any }) => {
           <div className="flex items-center gap-3">
             <span className="text-white/60 text-sm">Created by</span>
             <div className="flex items-center gap-2 cursor-pointer group">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
-                I
-              </div>
+              {course.image ? (
+                <img
+                  src={course.image}
+                  alt={course.instructorName || "Instructor"}
+                  className="w-8 h-8 rounded-full object-cover border border-primary/30"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+                  {course.instructorName ? course.instructorName.charAt(0).toUpperCase() : 'I'}
+                </div>
+              )}
               <span className="text-primary hover:text-primary-light transition-colors font-medium">
-                Instructor Name
+                {course.instructorName || "Instructor Name"}
               </span>
             </div>
           </div>

@@ -15,11 +15,26 @@ export const RelatedCourses = ({ course }: { course: any }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Render 4 mock related courses using CourseCard. Assuming CourseCard takes 'course' prop */}
-        <CourseCard course={{...course, title: "Related Course 1", _id: "r1", id: "r1"}} />
-        <CourseCard course={{...course, title: "Related Course 2", _id: "r2", id: "r2"}} />
-        <CourseCard course={{...course, title: "Related Course 3", _id: "r3", id: "r3"}} />
-        <CourseCard course={{...course, title: "Related Course 4", _id: "r4", id: "r4"}} />
+        {/* Render 4 mock related courses using CourseCard with flattened props */}
+        {[1, 2, 3, 4].map((i) => (
+          <CourseCard
+            key={`r${i}`}
+            id={`r${i}`}
+            title={`Related Course ${i}`}
+            thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
+            category={course?.category || 'General'}
+            difficulty={course?.difficulty || 'Beginner'}
+            instructorName={course?.instructorName || 'Instructor'}
+            instructorAvatar={course?.image || `https://i.pravatar.cc/150?u=r${i}`}
+            price={course?.price || 49.99}
+            discountPrice={course?.discountPrice}
+            isFree={course?.isFree}
+            studentsEnrolled={course?.studentEnroll ?? 0}
+            estimatedDuration={course?.estimatedDuration || '10 hours'}
+            lessons={course?.lessons ?? 0}
+            avgRating={course?.rating ?? 0}
+          />
+        ))}
       </div>
     </div>
   );
