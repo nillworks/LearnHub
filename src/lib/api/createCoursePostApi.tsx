@@ -1,5 +1,7 @@
 "use server";
 
+import headersAuthorization from "../headersAuthorization.server";
+
 export type ActionResponse = {
   success: boolean;
   data?: any;
@@ -18,6 +20,7 @@ export async function createCoursePostApi(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(await headersAuthorization()),
       },
       body: JSON.stringify(payload),
     });
