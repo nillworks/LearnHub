@@ -1,9 +1,10 @@
-import React from 'react'
+import CreateCourseSection from '@/components/DashboardLayout/Instructor/CreateCourse/CreateCourseSection'
+
 
 function page() {
   return (
     <div>
-      
+      <CreateCourseSection/>
     </div>
   )
 }
