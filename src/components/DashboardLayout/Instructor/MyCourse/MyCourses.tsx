@@ -5,6 +5,7 @@ import { Course } from "./types"
 import { CourseTable } from "./CourseTable"
 import { CourseCard } from "./CourseCard"
 import { UpdateCourseWrapper } from "./UpdateCourseWrapper"
+import { DeleteCourseFunction } from "./DeleteCourseFunction"
 import { Plus, LayoutGrid, List, X } from "lucide-react"
 
 // Mock data to demonstrate the design
@@ -69,11 +70,11 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
     setEditModal({ isOpen: true, courseId: id })
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteModal.courseId) {
-      setCourses(courses.filter((c) => c.id !== deleteModal.courseId))
+      setDeleteModal({ isOpen: false, courseId: null })
+      await DeleteCourseFunction(deleteModal.courseId, instructorId)
     }
-    setDeleteModal({ isOpen: false, courseId: null })
   }
 
   const selectedCourseForEdit = courses.find(c => c.id === editModal.courseId)

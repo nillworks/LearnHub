@@ -10,7 +10,7 @@ export type ActionResponse = {
 
 export async function createCoursePostApi(
   courseData: any,
-  status: "draft" | "pending"
+  status: "draft" | "published"
 ): Promise<ActionResponse> {
   try {
     const payload = { ...courseData, status };

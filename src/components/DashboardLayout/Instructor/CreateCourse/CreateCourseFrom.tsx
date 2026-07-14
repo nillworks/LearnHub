@@ -30,6 +30,7 @@ import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { imageUpload } from "@/lib/imageUpload";
 
 // Zod Schema
 const courseSchema = z
@@ -65,13 +66,15 @@ const step2Fields = ["isFree", "price", "discountPrice"] as const;
 const step3Fields = ["requirements", "learningOutcomes", "targetAudience"] as const;
 
 interface CreateCourseFromProps {
-  onSubmitForm: (data: FormData, status: "draft" | "pending") => Promise<{ success: boolean; data?: any; error?: string }>;
+  onSubmitForm: (data: FormData, status: "draft" | "published") => Promise<{ success: boolean; data?: any; error?: string }>;
 }
 
 const CreateCourseFrom = ({ onSubmitForm }: CreateCourseFromProps) => {
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [submittedStatus, setSubmittedStatus] = useState<"published" | "draft">("draft");
   
   const {
     register,
@@ -127,12 +130,13 @@ const CreateCourseFrom = ({ onSubmitForm }: CreateCourseFromProps) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const onSubmit = async (data: FormData, status: "draft" | "pending") => {
+  const onSubmit = async (data: FormData, status: "draft" | "published") => {
     setIsSubmittingForm(true);
     const result = await onSubmitForm(data, status);
     setIsSubmittingForm(false);
     
     if (result.success) {
+      setSubmittedStatus(status);
       setIsSuccess(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -140,37 +144,61 @@ const CreateCourseFrom = ({ onSubmitForm }: CreateCourseFromProps) => {
     }
   };
 
-  const handleFakeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (file.size > 2 * 1024 * 1024) {
         alert("File size exceeds 2MB limit.");
         return;
       }
-      const url = URL.createObjectURL(file);
-      setValue("thumbnailUrl", url, { shouldValidate: true });
+      // Show local preview immediately
+      const localUrl = URL.createObjectURL(file);
+      setValue("thumbnailUrl", localUrl, { shouldValidate: true });
+
+      // Upload to Imgbb and replace with permanent URL
+      setIsUploadingImage(true);
+      try {
+        const uploaded = await imageUpload(file);
+        if (uploaded?.display_url) {
+          setValue("thumbnailUrl", uploaded.display_url, { shouldValidate: true });
+        }
+      } catch (err) {
+        alert("Image upload failed. Please try again.");
+        setValue("thumbnailUrl", "", { shouldValidate: true });
+      } finally {
+        setIsUploadingImage(false);
+      }
     }
   };
 
   if (isSuccess) {
+    const isPublished = submittedStatus === "published";
     return (
       <div className="flex flex-col items-center text-center py-10">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="bg-primary-light rounded-full p-6 mb-6 mx-auto"
+          className={`${isPublished ? 'bg-primary-light' : 'bg-surface dark:bg-dark-bg border border-secondary-lighter'} rounded-full p-6 mb-6 mx-auto`}
         >
-          <CheckCircle2 className="text-primary w-14 h-14" />
+          <CheckCircle2 className={`${isPublished ? 'text-primary' : 'text-text-secondary'} w-14 h-14`} />
         </motion.div>
         <h2 className="text-secondary dark:text-surface font-heading font-bold text-2xl">
-          Course Submitted for Review!
+          {isPublished ? 'Course Published!' : 'Course Saved as Draft!'}
         </h2>
         <p className="mt-3 max-w-md mx-auto text-text-secondary font-body leading-relaxed">
-          Your course is now under review by our admin team. You&apos;ll be notified once it&apos;s approved and live.
+          {isPublished
+            ? 'Your course is now live and available to students on the platform.'
+            : 'Your course has been saved as a draft. You can continue editing and publish it whenever you are ready.'}
         </p>
-        <div className="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-full px-4 py-1.5 text-sm font-medium inline-flex items-center gap-2">
-          <Clock className="w-3.5 h-3.5" /> Status: Pending Approval
+        <div className={`mt-4 ${
+          isPublished
+            ? 'bg-primary-light border border-primary/20 text-primary-dark'
+            : 'bg-surface dark:bg-dark-bg border border-secondary-lighter text-text-secondary'
+          } rounded-full px-4 py-1.5 text-sm font-medium inline-flex items-center gap-2`}>
+          {isPublished
+            ? <><CheckCheck className="w-3.5 h-3.5" /> Status: Published</>
+            : <><Save className="w-3.5 h-3.5" /> Status: Draft</> }
         </div>
         <div className="mt-8 flex gap-4 justify-center">
           <button onClick={() => window.location.href = "/dashboard/instructor/courses"} className="bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl px-6 py-3 transition-colors">
@@ -289,19 +317,35 @@ const CreateCourseFrom = ({ onSubmitForm }: CreateCourseFromProps) => {
 
             <div className="space-y-1.5">
               <Label className="text-secondary dark:text-surface font-body font-medium text-sm">Thumbnail Image</Label>
-              <input type="file" id="thumbnail-upload" className="hidden" accept="image/jpeg, image/png, image/webp" onChange={handleFakeUpload} />
+              <input type="file" id="thumbnail-upload" className="hidden" accept="image/jpeg, image/png, image/webp" onChange={handleImageUpload} />
               
               {!watchThumbnail ? (
                 <label
                   htmlFor="thumbnail-upload"
                   className="block border-2 border-dashed border-secondary-lighter dark:border-secondary rounded-2xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary-light/30 transition-all duration-200 bg-surface dark:bg-dark-bg"
                 >
-                  <UploadCloud className="text-primary w-9 h-9 mx-auto mb-3" />
-                  <p className="text-secondary dark:text-surface font-heading font-semibold text-sm">Drag & drop your thumbnail here</p>
-                  <p className="text-text-secondary text-xs mt-1">or click to browse — JPG, PNG, WEBP only · Max 2MB</p>
+                  {isUploadingImage ? (
+                    <>
+                      <Loader2 className="text-primary w-9 h-9 mx-auto mb-3 animate-spin" />
+                      <p className="text-secondary dark:text-surface font-heading font-semibold text-sm">Uploading image...</p>
+                      <p className="text-text-secondary text-xs mt-1">Please wait while we upload your thumbnail</p>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="text-primary w-9 h-9 mx-auto mb-3" />
+                      <p className="text-secondary dark:text-surface font-heading font-semibold text-sm">Drag & drop your thumbnail here</p>
+                      <p className="text-text-secondary text-xs mt-1">or click to browse — JPG, PNG, WEBP only · Max 2MB</p>
+                    </>
+                  )}
                 </label>
               ) : (
                 <div className="relative rounded-2xl overflow-hidden w-full aspect-video group">
+                  {isUploadingImage && (
+                    <div className="absolute inset-0 z-10 bg-black/50 flex flex-col items-center justify-center gap-2">
+                      <Loader2 className="text-white w-8 h-8 animate-spin" />
+                      <p className="text-white text-sm font-medium">Uploading to cloud...</p>
+                    </div>
+                  )}
                   <Image src={watchThumbnail} alt="Thumbnail preview" fill className="object-cover" />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button type="button" onClick={() => setValue("thumbnailUrl", "", { shouldValidate: true })} className="bg-white/20 hover:bg-white/40 p-2 rounded-full text-white transition-colors">
@@ -619,12 +663,12 @@ const CreateCourseFrom = ({ onSubmitForm }: CreateCourseFromProps) => {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSubmit((data) => onSubmit(data, "pending"))}
+                  onClick={handleSubmit((data) => onSubmit(data, "published"))}
                   disabled={isSubmittingForm}
                   className="bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl px-7 py-3 flex items-center gap-2 transition-colors disabled:opacity-50"
                 >
-                  {isSubmittingForm ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendHorizontal className="w-4 h-4" />}
-                  {isSubmittingForm ? "Submitting..." : "Submit for Review"}
+                  {isSubmittingForm ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCheck className="w-4 h-4" />}
+                  {isSubmittingForm ? "Publishing..." : "Publish Course"}
                 </button>
               </div>
             </div>

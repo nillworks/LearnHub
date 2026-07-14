@@ -6,7 +6,7 @@ import { createCoursePostApi } from "@/lib/api/createCoursePostApi";
 const CreateCourseSection = () => {
   
   // Rule 32: Create the submit handler or server action in the parent/server component.
-  const handleCourseSubmit = async (data: any, status: "draft" | "pending") => {
+  const handleCourseSubmit = async (data: any, status: "draft" | "published") => {
     "use server";
     return await createCoursePostApi(data, status);
   };
