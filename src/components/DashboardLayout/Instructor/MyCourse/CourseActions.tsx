@@ -30,61 +30,51 @@ export function CourseActions({
     <TooltipProvider delay={200}>
       <div className="flex items-center gap-1">
         <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={() => onEdit?.(courseId)}
-              className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors"
-            >
-              <Edit2 size={18} />
-            </button>
+          <TooltipTrigger
+            onClick={() => onEdit?.(courseId)}
+            className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors cursor-pointer"
+          >
+            <Edit2 size={18} />
           </TooltipTrigger>
           <TooltipContent>Edit Course</TooltipContent>
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={() => onManageLessons?.(courseId)}
-              className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors"
-            >
-              <BookOpen size={18} />
-            </button>
+          <TooltipTrigger
+            onClick={() => onManageLessons?.(courseId)}
+            className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors cursor-pointer"
+          >
+            <BookOpen size={18} />
           </TooltipTrigger>
           <TooltipContent>Manage Lessons</TooltipContent>
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={() => onViewStudents?.(courseId)}
-              className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors"
-            >
-              <Users size={18} />
-            </button>
+          <TooltipTrigger
+            onClick={() => onViewStudents?.(courseId)}
+            className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors cursor-pointer"
+          >
+            <Users size={18} />
           </TooltipTrigger>
           <TooltipContent>View Students</TooltipContent>
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={() => onPreview?.(courseId)}
-              className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors"
-            >
-              <Eye size={18} />
-            </button>
+          <TooltipTrigger
+            onClick={() => onPreview?.(courseId)}
+            className="p-2 rounded-xl text-secondary-light hover:text-primary hover:bg-primary-light transition-colors cursor-pointer"
+          >
+            <Eye size={18} />
           </TooltipTrigger>
           <TooltipContent>Preview</TooltipContent>
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={() => onDelete?.(courseId)}
-              className="p-2 rounded-xl text-secondary-light hover:text-danger hover:bg-danger-light transition-colors"
-            >
-              <Trash2 size={18} />
-            </button>
+          <TooltipTrigger
+            onClick={() => onDelete?.(courseId)}
+            className="p-2 rounded-xl text-secondary-light hover:text-danger hover:bg-danger-light transition-colors cursor-pointer"
+          >
+            <Trash2 size={18} />
           </TooltipTrigger>
           <TooltipContent>Delete</TooltipContent>
         </Tooltip>

@@ -16,11 +16,10 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
     <div className="bg-white dark:bg-[#1e293b] rounded-3xl border border-border dark:border-secondary overflow-hidden hover:shadow-md transition-shadow duration-300">
       {/* Thumbnail & Status */}
       <div className="relative h-40 w-full bg-secondary-lighter dark:bg-dark-bg">
-        <Image 
+        <img 
           src={course.thumbnail} 
           alt={course.title} 
-          fill 
-          className="object-cover" 
+          className="object-cover w-full h-full" 
         />
         <div className="absolute top-3 left-3">
           <CourseStatusBadge status={course.status} />

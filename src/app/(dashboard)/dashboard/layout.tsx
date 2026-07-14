@@ -22,10 +22,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <SidebarContent user={user} />
-      <SidebarInset className="flex flex-col min-h-screen transition-all duration-300 relative z-10 bg-background dark:bg-dark-bg">
+      <SidebarInset className="flex flex-col min-h-screen transition-all duration-300 relative z-10 bg-background dark:bg-dark-bg w-full min-w-0 overflow-x-hidden">
         <TopBardDashBoard user={user} />
-        <main className="flex-1 p-6 lg:p-8 overflow-auto">
-          <div className="max-w-7xl mx-auto text-text-primary dark:text-surface">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden min-w-0">
+          <div className="w-full mx-auto text-text-primary dark:text-surface">
             {children}
           </div>
         </main>

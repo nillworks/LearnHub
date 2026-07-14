@@ -1,5 +1,5 @@
 import React from "react"
-import Image from "next/image"
+
 import { Course } from "./types"
 import { CourseStatusBadge } from "./CourseStatusBadge"
 import { CourseActions } from "./CourseActions"
@@ -44,14 +44,13 @@ export function CourseTable({ courses, onEdit, onDelete }: CourseTableProps) {
               >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
-                    <div className="relative h-12 w-16 rounded-lg overflow-hidden bg-secondary-lighter shrink-0">
-                      <Image 
-                        src={course.thumbnail} 
-                        alt={course.title} 
-                        fill 
-                        className="object-cover" 
-                      />
-                    </div>
+                      <div className="relative h-12 w-20 shrink-0 bg-secondary-lighter dark:bg-dark-bg rounded-lg overflow-hidden border border-border dark:border-secondary">
+                        <img 
+                          src={course.thumbnail} 
+                          alt={course.title} 
+                          className="object-cover w-full h-full" 
+                        />
+                      </div>
                     <div>
                       <h4 className="font-heading font-semibold text-text-primary dark:text-surface truncate max-w-xs">
                         {course.title}

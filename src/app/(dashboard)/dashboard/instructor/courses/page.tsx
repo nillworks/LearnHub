@@ -1,10 +1,19 @@
 import React from 'react'
 import { MyCourses } from '@/components/DashboardLayout/Instructor/MyCourse/MyCourses'
+import { getCourseInstructor } from '@/lib/api/getCourseInsttructor'
+import getUserSession from '@/lib/getUserSection'
 
-const page = () => {
+const page = async() => {
+
+
+  const user= await getUserSession()
+  const instructorCourseData = await getCourseInstructor(user?.id);
+
+
+
   return (
-    <div className="w-full h-full">
-      <MyCourses />
+    <div className="w-full max-w-full min-w-0 overflow-x-hidden">
+      <MyCourses instructorCourseData={instructorCourseData} instructorId={user?.id} />
     </div>
   )
 }
