@@ -10,9 +10,11 @@ export const metadata: Metadata = {
 };
 
 const CoursesPage = async () => {
-  const courses = await getAllCourse();
+  const response = await getAllCourse({ page: 1, limit: 10 });
+  const courses = response?.data || [];
+  const pagination = response?.pagination || { hasMore: false };
 
-  return <AllCoursesPage courses={courses} />;
+  return <AllCoursesPage initialCourses={courses} initialPagination={pagination} />;
 };
 
 export default CoursesPage;

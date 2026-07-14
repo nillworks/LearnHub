@@ -1,4 +1,5 @@
 import { Course } from "@/components/DashboardLayout/Instructor/MyCourse/types"
+import headersAuthorization from "../headersAuthorization.server";
 
 export const getCourseInstructor = async (userId: string): Promise<Course[]> => {
   try {
@@ -7,6 +8,7 @@ export const getCourseInstructor = async (userId: string): Promise<Course[]> => 
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        ...(await headersAuthorization()),
       },
       cache: "no-store",
     })

@@ -1,10 +1,19 @@
 import CustomToast from '@/components/shared/CustomToast';
+import { authClient } from '@/lib/auth-client';
 
 export const DeleteCourseFunction = async (courseId: string, instructorId: string): Promise<void> => {
   try {
+    const { data: tokenData } = await authClient.getToken();
+    const token = tokenData?.token;
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/courses/instructor/${instructorId}/course/${courseId}`,
-      { method: 'DELETE' }
+      {
+        method: 'DELETE',
+        headers: {
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+      }
     );
 
     const data = await response.json();

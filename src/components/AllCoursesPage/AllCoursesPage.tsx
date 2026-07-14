@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CourseCard from '@/components/shared/CourseCard';
+import getAllCourse from '@/lib/api/getAllCourse';
 import {
   Search,
   SlidersHorizontal,
@@ -59,14 +60,45 @@ const SORT_OPTIONS = [
   { label: 'Highest Price', value: 'price_desc' },
 ];
 
-function parseDurationHours(duration?: string): number {
-  if (!duration) return 0;
-  const match = duration.match(/(\d+(\.\d+)?)/);
-  return match ? parseFloat(match[1]) : 0;
-}
+const CourseSkeleton = () => (
+  <div className="flex flex-col bg-white dark:bg-[#1e293b] rounded-3xl border border-secondary-lighter dark:border-secondary overflow-hidden shadow-sm animate-pulse">
+    <div className="h-48 bg-secondary-lighter dark:bg-secondary w-full" />
+    <div className="p-5 flex-1 flex flex-col">
+      <div className="flex justify-between items-center mb-3">
+        <div className="h-4 bg-secondary-lighter dark:bg-secondary rounded-full w-24" />
+        <div className="h-4 bg-secondary-lighter dark:bg-secondary rounded-full w-12" />
+      </div>
+      <div className="h-6 bg-secondary-lighter dark:bg-secondary rounded-full w-3/4 mb-4" />
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-7 h-7 rounded-full bg-secondary-lighter dark:bg-secondary" />
+        <div className="h-3 bg-secondary-lighter dark:bg-secondary rounded-full w-24" />
+      </div>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="h-3 bg-secondary-lighter dark:bg-secondary rounded-full w-16" />
+        <div className="h-3 bg-secondary-lighter dark:bg-secondary rounded-full w-16" />
+      </div>
+      <div className="border-t border-border dark:border-secondary mt-auto pt-4 flex justify-between items-center">
+        <div className="h-6 bg-secondary-lighter dark:bg-secondary rounded-full w-16" />
+        <div className="h-10 bg-secondary-lighter dark:bg-secondary rounded-xl w-28" />
+      </div>
+    </div>
+  </div>
+);
 
-export default function AllCoursesPage({ courses }: { courses: Course[] }) {
+export default function AllCoursesPage({ 
+  initialCourses, 
+  initialPagination 
+}: { 
+  initialCourses: Course[], 
+  initialPagination: any 
+}) {
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [page, setPage] = useState(initialPagination?.page || 1);
+  const [hasMore, setHasMore] = useState(initialPagination?.hasMore || false);
+  const [isFetching, setIsFetching] = useState(false);
+
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [selectedDuration, setSelectedDuration] = useState('all');
@@ -76,83 +108,90 @@ export default function AllCoursesPage({ courses }: { courses: Course[] }) {
   const [sortBy, setSortBy] = useState('latest');
   const [showFilters, setShowFilters] = useState(false);
 
-  const filtered = useMemo(() => {
-    let result = [...courses];
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-    // Search by course name or instructor name
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (c) =>
-          c.title?.toLowerCase().includes(q) ||
-          c.instructorName?.toLowerCase().includes(q)
-      );
-    }
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-    // Category filter
-    if (selectedCategory !== 'All') {
-      result = result.filter(
-        (c) => c.category?.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
-
-    // Level filter
-    if (selectedLevel !== 'All') {
-      result = result.filter(
-        (c) => c.difficulty?.toLowerCase() === selectedLevel.toLowerCase()
-      );
-    }
-
-    // Duration filter
-    if (selectedDuration !== 'all') {
-      result = result.filter((c) => {
-        const h = parseDurationHours(c.estimatedDuration);
-        if (selectedDuration === 'under2') return h < 2;
-        if (selectedDuration === '2to5') return h >= 2 && h <= 5;
-        if (selectedDuration === '5to10') return h > 5 && h <= 10;
-        if (selectedDuration === 'over10') return h > 10;
-        return true;
+  // Fetch when filters change (Reset page to 1)
+  useEffect(() => {
+    let isMounted = true;
+    const fetchFiltered = async () => {
+      setIsFetching(true);
+      const res = await getAllCourse({
+        page: 1,
+        limit: 10,
+        search: debouncedSearch,
+        category: selectedCategory !== 'All' ? selectedCategory : undefined,
+        level: selectedLevel !== 'All' ? selectedLevel : undefined,
+        duration: selectedDuration !== 'all' ? selectedDuration : undefined,
+        minPrice,
+        maxPrice,
+        minRating,
+        sortBy
       });
-    }
 
-    // Price range filter
-    const min = minPrice !== '' ? parseFloat(minPrice) : null;
-    const max = maxPrice !== '' ? parseFloat(maxPrice) : null;
-    result = result.filter((c) => {
-      const effectivePrice = c.isFree ? 0 : (c.discountPrice ?? c.price ?? 0);
-      if (min !== null && effectivePrice < min) return false;
-      if (max !== null && effectivePrice > max) return false;
-      return true;
+      if (isMounted) {
+        setCourses(res?.data || []);
+        setPage(res?.pagination?.page || 1);
+        setHasMore(res?.pagination?.hasMore || false);
+        setIsFetching(false);
+      }
+    };
+    
+    // Skip initial render fetch since we have initialCourses, 
+    // unless a filter was already applied (which shouldn't happen on first load)
+    fetchFiltered();
+
+    return () => { isMounted = false; };
+  }, [debouncedSearch, selectedCategory, selectedLevel, selectedDuration, minPrice, maxPrice, minRating, sortBy]);
+
+  // Fetch more pages on scroll
+  const loadMore = useCallback(async () => {
+    if (isFetching || !hasMore) return;
+    setIsFetching(true);
+    
+    const nextPage = page + 1;
+    const res = await getAllCourse({
+      page: nextPage,
+      limit: 10,
+      search: debouncedSearch,
+      category: selectedCategory !== 'All' ? selectedCategory : undefined,
+      level: selectedLevel !== 'All' ? selectedLevel : undefined,
+      duration: selectedDuration !== 'all' ? selectedDuration : undefined,
+      minPrice,
+      maxPrice,
+      minRating,
+      sortBy
     });
 
-    // Rating filter
-    if (minRating > 0) {
-      result = result.filter((c) => (c.rating ?? 0) >= minRating);
+    if (res?.data) {
+      setCourses(prev => [...prev, ...res.data]);
+      setPage(res.pagination.page);
+      setHasMore(res.pagination.hasMore);
     }
+    setIsFetching(false);
+  }, [page, hasMore, isFetching, debouncedSearch, selectedCategory, selectedLevel, selectedDuration, minPrice, maxPrice, minRating, sortBy]);
 
-    // Sorting
-    result.sort((a, b) => {
-      if (sortBy === 'latest')
-        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-      if (sortBy === 'oldest')
-        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
-      if (sortBy === 'rating')
-        return (b.rating ?? 0) - (a.rating ?? 0);
-      if (sortBy === 'price_asc') {
-        const pa = a.isFree ? 0 : (a.discountPrice ?? a.price ?? 0);
-        const pb = b.isFree ? 0 : (b.discountPrice ?? b.price ?? 0);
-        return pa - pb;
-      }
-      if (sortBy === 'price_desc') {
-        const pa = a.isFree ? 0 : (a.discountPrice ?? a.price ?? 0);
-        const pb = b.isFree ? 0 : (b.discountPrice ?? b.price ?? 0);
-        return pb - pa;
-      }
-      return 0;
-    });
-
-    return result;
-  }, [courses, search, selectedCategory, selectedLevel, selectedDuration, minPrice, maxPrice, minRating, sortBy]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 1.0 }
+    );
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const hasActiveFilters =
     selectedCategory !== 'All' ||
@@ -184,7 +223,7 @@ export default function AllCoursesPage({ courses }: { courses: Course[] }) {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm text-white/90 backdrop-blur-sm mb-4">
             <BookOpen className="size-4" />
-            <span>{courses.length} Published Courses</span>
+            <span>Explore our curriculum</span>
           </div>
           <h1 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4">
             Explore All Courses
@@ -248,13 +287,6 @@ export default function AllCoursesPage({ courses }: { courses: Course[] }) {
                   Clear All
                 </button>
               )}
-
-              <span className="text-text-secondary text-sm hidden sm:block">
-                <span className="font-semibold text-text-primary dark:text-surface">
-                  {filtered.length}
-                </span>{' '}
-                courses found
-              </span>
             </div>
 
             {/* Right: Sort dropdown */}
@@ -506,7 +538,7 @@ export default function AllCoursesPage({ courses }: { courses: Course[] }) {
 
           {/* ── COURSE GRID ── */}
           <div className="flex-1 min-w-0">
-            {filtered.length === 0 ? (
+            {courses.length === 0 && !isFetching ? (
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <div className="w-20 h-20 rounded-full bg-primary-light flex items-center justify-center mb-5">
                   <BookOpen className="size-9 text-primary" />
@@ -525,32 +557,49 @@ export default function AllCoursesPage({ courses }: { courses: Course[] }) {
                 </button>
               </div>
             ) : (
-              <div
-                className={`grid gap-6 ${
-                  showFilters
-                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3'
-                }`}
-              >
-                {filtered.map((course) => (
-                  <CourseCard
-                    key={course._id}
-                    id={course._id}
-                    title={course.title || 'Untitled Course'}
-                    thumbnail={course.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
-                    category={course.category || 'General'}
-                    difficulty={course.difficulty || 'Beginner'}
-                    instructorName={course.instructorName || 'Instructor'}
-                    instructorAvatar={course.image || `https://i.pravatar.cc/150?u=${course._id}`}
-                    price={course.price || 0}
-                    discountPrice={course.discountPrice}
-                    isFree={course.isFree}
-                    studentsEnrolled={course.studentEnroll ?? 0}
-                    estimatedDuration={course.estimatedDuration || ''}
-                    lessons={course.lessons ?? 0}
-                    avgRating={course.rating ?? 0}
-                  />
-                ))}
+              <div className="flex flex-col gap-6">
+                <div
+                  className={`grid gap-6 ${
+                    showFilters
+                      ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3'
+                  }`}
+                >
+                  {courses.map((course) => (
+                    <CourseCard
+                      key={course._id}
+                      id={course._id}
+                      title={course.title || 'Untitled Course'}
+                      thumbnail={course.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
+                      category={course.category || 'General'}
+                      difficulty={course.difficulty || 'Beginner'}
+                      instructorName={course.instructorName || 'Instructor'}
+                      instructorAvatar={course.image || `https://i.pravatar.cc/150?u=${course._id}`}
+                      price={course.price || 0}
+                      discountPrice={course.discountPrice}
+                      isFree={course.isFree}
+                      studentsEnrolled={course.studentEnroll ?? 0}
+                      estimatedDuration={course.estimatedDuration || ''}
+                      lessons={course.lessons ?? 0}
+                      avgRating={course.rating ?? 0}
+                    />
+                  ))}
+                  
+                  {isFetching && Array.from({ length: 3 }).map((_, i) => (
+                    <CourseSkeleton key={`skeleton-${i}`} />
+                  ))}
+                </div>
+                
+                {/* Intersection Observer Target */}
+                <div ref={observerTarget} className="h-10 w-full flex items-center justify-center">
+                  {isFetching && (
+                    <div className="flex gap-2 items-center">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

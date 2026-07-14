@@ -5,6 +5,7 @@ import { Course } from './types';
 import { EditCourseModal } from './EditCourseModal';
 import { updateCourseApi } from '@/lib/api/updateCourseApi';
 import CustomToast from '@/components/shared/CustomToast';
+import { authClient } from '@/lib/auth-client';
 
 interface UpdateCourseWrapperProps {
   isOpen: boolean;
@@ -20,7 +21,10 @@ export function UpdateCourseWrapper({ isOpen, onClose, course, instructorId }: U
 
     onClose();
 
-    const response = await updateCourseApi(instructorId, course.id, updatedData);
+    const { data: tokenData } = await authClient.getToken();
+    const token = tokenData?.token;
+
+    const response = await updateCourseApi(instructorId, course.id, updatedData, token);
 
     if (response.success) {
       // Reload the page to fetch fresh data from the server

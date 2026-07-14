@@ -3,7 +3,8 @@ import { Course } from '@/components/DashboardLayout/Instructor/MyCourse/types';
 export const updateCourseApi = async (
   instructorId: string, 
   courseId: string, 
-  updateData: Partial<Course>
+  updateData: Partial<Course>,
+  token?: string | null
 ) => {
   try {
     // Remap 'thumbnail' → 'thumbnailUrl' to match MongoDB field name
@@ -17,6 +18,7 @@ export const updateCourseApi = async (
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(payload),
     });
