@@ -21,7 +21,7 @@ export function UpdateCourseWrapper({ isOpen, onClose, course, instructorId }: U
 
     onClose();
 
-    const { data: tokenData } = await authClient.getToken();
+    const { data: tokenData } = await authClient.token();
     const token = tokenData?.token;
 
     const response = await updateCourseApi(instructorId, course.id, updatedData, token);

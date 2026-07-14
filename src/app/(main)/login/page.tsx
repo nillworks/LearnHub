@@ -1,10 +1,11 @@
 "use client";
 
-import LoginForm, { LoginFormData, LoginResponse } from '@/components/authUi/LoginForm';
+import LoginForm, { LoginResponse } from '@/components/authUi/LoginForm';
+import type { LoginInput } from '@/schemas/auth';
 import { signIn } from '@/lib/auth-client';
 
 const Page = () => {
-  const handleLogin = async (formData: LoginFormData): Promise<LoginResponse> => {
+  const handleLogin = async (formData: LoginInput): Promise<LoginResponse> => {
     try {
       const { data, error } = await signIn.email({
         email: formData.email,

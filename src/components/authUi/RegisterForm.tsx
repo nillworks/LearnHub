@@ -62,7 +62,7 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
         const uploadResult = await imageUpload(profileImage)
         
         // Ensure we got a valid URL back
-        imageUrl = uploadResult?.display_url || uploadResult?.url || (typeof uploadResult === 'string' ? uploadResult : null)
+        imageUrl = uploadResult?.display_url || uploadResult?.url || (typeof uploadResult === 'string' ? uploadResult : 'none')
         
         if (!imageUrl || imageUrl === 'none') {
           CustomToast('error', 'Upload Failed', 'Could not upload the profile image. Please try another image.')

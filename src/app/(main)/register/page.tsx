@@ -1,14 +1,17 @@
 "use client";
 
-import RegisterForm, { RegisterFormData, RegisterResponse } from '@/components/authUi/RegisterForm';
+import RegisterForm, { RegisterResponse } from '@/components/authUi/RegisterForm';
 import { signUp } from '@/lib/auth-client';
+import type { RegisterInput } from '@/schemas/auth';
+
+type RegisterFormData = RegisterInput & { profileImage: string };
 
 const Page = () => {
   const handleRegister = async (formData: RegisterFormData): Promise<RegisterResponse> => {
     try {
       const { data, error } = await signUp.email({
         email: formData.email,
-        password: formData.password || formData.confirmPassword || '',
+        password: formData.password,
         name: formData.name,
         image: formData.profileImage,
       });

@@ -3,7 +3,7 @@ import { authClient } from '@/lib/auth-client';
 
 export const DeleteCourseFunction = async (courseId: string, instructorId: string): Promise<void> => {
   try {
-    const { data: tokenData } = await authClient.getToken();
+    const { data: tokenData } = await authClient.token();
     const token = tokenData?.token;
 
     const response = await fetch(

@@ -44,17 +44,17 @@ const courseSchema = z
     language: z.string().min(1, "Language is required"),
     estimatedDuration: z.string().min(1, "Estimated duration is required"),
     isFree: z.boolean(),
-    price: z.number().positive().optional().or(z.nan()).or(z.literal("").transform(() => undefined)),
-    discountPrice: z.number().positive().optional().or(z.nan()).or(z.literal("").transform(() => undefined)),
+    price: z.number().positive().optional(),
+    discountPrice: z.number().positive().optional(),
     requirements: z.array(z.object({ value: z.string().min(1, "Required") })).min(1, "At least 1 requirement needed").max(10),
     learningOutcomes: z.array(z.object({ value: z.string().min(1, "Required") })).min(1, "At least 1 outcome needed").max(10),
     targetAudience: z.string().min(30, "Min 30 characters").max(500, "Max 500 characters"),
   })
-  .refine((data) => data.isFree || (data.price !== undefined && data.price > 0 && !isNaN(data.price)), {
+  .refine((data) => data.isFree || (data.price !== undefined && data.price > 0), {
     message: "Price is required for paid courses",
     path: ["price"],
   })
-  .refine((data) => !data.discountPrice || (data.price && data.discountPrice < data.price), {
+  .refine((data) => !data.discountPrice || (data.price !== undefined && data.discountPrice < data.price), {
     message: "Discount must be less than original price",
     path: ["discountPrice"],
   });
@@ -85,7 +85,7 @@ const CreateCourseFrom = ({ onSubmitForm }: CreateCourseFromProps) => {
     setValue,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(courseSchema),
+    resolver: zodResolver(courseSchema) as any,
     defaultValues: {
       title: "",
       shortDescription: "",
