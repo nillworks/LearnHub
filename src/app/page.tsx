@@ -9,6 +9,8 @@ import FAQ from "@/components/HomePage/FAQ";
 import CTA from "@/components/HomePage/CTA";
 import Footer from "@/components/HomePage/Footer";
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   return (
     <section>
