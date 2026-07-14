@@ -10,8 +10,8 @@ export const DeleteCourseFunction = async (courseId: string, instructorId: strin
     const data = await response.json();
 
     if (data.success) {
-      CustomToast('success', 'Course Deleted!', 'The course has been permanently removed.');
       window.location.reload();
+      CustomToast('success', 'Course Deleted!', 'The course has been permanently removed.');
     } else {
       CustomToast('error', 'Delete Failed', data.message || 'Something went wrong. Please try again.');
     }

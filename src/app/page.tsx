@@ -1,6 +1,7 @@
 import HeroSection from "@/components/HomePage/HeroSection";
 import PlatformStatistics from "@/components/HomePage/PlatformStatistics";
 import PopularCategories from "@/components/HomePage/PopularCategories";
+import FeaturedCourses from "@/components/HomePage/FeaturedCourses";
 import TopInstructors from "@/components/HomePage/TopInstructors";
 import StudentTestimonials from "@/components/HomePage/StudentTestimonials";
 import WhyChooseUs from "@/components/HomePage/WhyChooseUs";
@@ -11,9 +12,9 @@ import Footer from "@/components/HomePage/Footer";
 export default function Home() {
   return (
     <section>
-
       <HeroSection />
       <PlatformStatistics />
+      <FeaturedCourses />
       <PopularCategories />
       <TopInstructors />
       <StudentTestimonials />
@@ -21,7 +22,6 @@ export default function Home() {
       <FAQ />
       <CTA />
       <Footer />
-
     </section>
   );
 }
