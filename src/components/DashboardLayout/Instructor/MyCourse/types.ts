@@ -20,4 +20,5 @@ export interface Course {
   targetAudience?: string
   shortDescription?: string
   fullDescription?: string
+  createdAt?: string
 }

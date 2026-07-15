@@ -1,13 +1,12 @@
+import 'server-only';
 import headersAuthorization from '../headersAuthorization.server';
 
-export const checkEnrollment = async (
-  courseId: string,
-): Promise<boolean> => {
+export const checkWishlist = async (courseId: string): Promise<boolean> => {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     const authHeaders = await headersAuthorization();
 
-    const res = await fetch(`${apiUrl}/api/enrollment/check/${courseId}`, {
+    const res = await fetch(`${apiUrl}/api/wishlist/check/${courseId}`, {
       cache: 'no-store',
       headers: {
         ...authHeaders,
@@ -15,15 +14,12 @@ export const checkEnrollment = async (
       },
     });
 
-    if (!res.ok) {
-      return false;
-    }
-
+    if (!res.ok) return false;
     const json = await res.json();
-    return json.data?.enrolled === true;
+    return json.data?.wishlisted === true;
   } catch {
     return false;
   }
 };
 
-export default checkEnrollment;
+export default checkWishlist;

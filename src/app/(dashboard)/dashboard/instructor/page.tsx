@@ -1,11 +1,12 @@
-import React from 'react'
+import OverviewPage from '@/components/DashboardLayout/Instructor/Overview/OverviewPage';
+
 
 const page = () => {
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <section>
+      <OverviewPage />
+    </section>
+  );
+};
 
-export default page
+export default page;

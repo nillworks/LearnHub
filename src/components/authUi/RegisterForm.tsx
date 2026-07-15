@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { imageUpload } from "@/lib/imageUpload"
@@ -14,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
-import { Eye as EyeIcon, EyeOff as EyeOffIcon, Mail as MailIcon, Lock as LockIcon, User as UserIcon, ArrowRight as ArrowRightIcon, Sparkles as SparklesIcon, Target as TargetIcon, Image as ImageIcon } from "lucide-react"
+import { Eye as EyeIcon, EyeOff as EyeOffIcon, Mail as MailIcon, Lock as LockIcon, User as UserIcon, ArrowRight as ArrowRightIcon, Sparkles as SparklesIcon, Target as TargetIcon, Camera as CameraIcon, X as XIcon } from "lucide-react"
 import CustomToast from "@/components/shared/CustomToast"
 
 export interface RegisterResponse {
@@ -48,6 +49,12 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
     }
   }
 
+  const removeImage = () => {
+    setProfileImage(null)
+    setPreviewUrl(null)
+    form.setValue("image", undefined as any)
+  }
+
   const handleSubmit = async (data: RegisterInput) => {
     if (!profileImage) {
       form.setError("image", { type: "manual", message: "Profile image is required" })
@@ -61,7 +68,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
       if (profileImage) {
         const uploadResult = await imageUpload(profileImage)
         
-        // Ensure we got a valid URL back
         imageUrl = uploadResult?.display_url || uploadResult?.url || (typeof uploadResult === 'string' ? uploadResult : 'none')
         
         if (!imageUrl || imageUrl === 'none') {
@@ -88,7 +94,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
         router.refresh()
       }
     } catch (error: any) {
-      console.error('Registration error:', error)
       CustomToast('error', 'Error', error.message || 'Something went wrong')
     } finally {
       setIsLoading(false)
@@ -98,7 +103,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col justify-center bg-surface dark:bg-dark-bg py-12 lg:py-16 relative">
       
-      {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[10%] right-[10%] w-[40%] h-[40%] rounded-full bg-primary-light/40 dark:bg-primary-darker/20 blur-[120px]"></div>
         <div className="absolute -bottom-[20%] -left-[10%] w-[50%] h-[60%] rounded-full bg-primary-light/30 dark:bg-primary-darker/20 blur-[100px]"></div>
@@ -107,7 +111,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
           
-          {/* Left Column: Visuals & Copy */}
           <div className="lg:col-span-7 flex flex-col justify-center order-2 lg:order-1 pr-0 lg:pr-12 xl:pr-24">
             
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary-light dark:bg-primary-darker/50 border border-secondary-lighter dark:border-secondary shadow-sm text-primary-dark dark:text-primary-light font-medium text-sm mb-10 w-fit">
@@ -127,7 +130,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
               Join thousands of learners mastering new skills. Create your account to unlock premium resources, expert-led courses, and a thriving community.
             </p>
             
-            {/* Feature Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="p-8 rounded-[2rem] bg-white dark:bg-[#1e293b] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-border/40 group">
                 <div className="w-12 h-12 rounded-[1rem] bg-surface dark:bg-dark-bg flex items-center justify-center text-primary-dark dark:text-primary-light mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -146,11 +148,9 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
             </div>
           </div>
 
-          {/* Right Column: Form Card */}
           <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end">
             <div className="w-full bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 sm:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-secondary-lighter dark:border-secondary relative overflow-hidden group/card">
               
-              {/* Subtle inner glow for premium feel */}
               <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary-light/50 dark:bg-primary-darker/50 rounded-full blur-3xl pointer-events-none opacity-50 group-hover/card:opacity-100 transition-opacity duration-700"></div>
               
               <div className="relative z-10">
@@ -166,6 +166,68 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
                 <Form {...form}>
                   <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)}>
                     
+                    {/* Profile Image Upload */}
+                    <FormField
+                      control={form.control}
+                      name="image"
+                      render={() => (
+                        <FormItem className="space-y-2">
+                          <FormLabel className="block text-sm font-semibold text-text-primary dark:text-surface font-body">
+                            Profile Image
+                          </FormLabel>
+                          <div className="flex items-center gap-4">
+                            <div className="relative group/avatar">
+                              <div className={cn(
+                                "w-20 h-20 rounded-full overflow-hidden border-2 border-dashed transition-all duration-300",
+                                previewUrl
+                                  ? "border-primary bg-primary-light/20"
+                                  : "border-secondary-lighter dark:border-secondary bg-surface dark:bg-[#0f172a] hover:border-primary hover:bg-primary-light/20"
+                              )}>
+                                {previewUrl ? (
+                                  <>
+                                    <Image
+                                      src={previewUrl}
+                                      alt="Profile preview"
+                                      fill
+                                      className="object-cover"
+                                      sizes="80px"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={removeImage}
+                                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-200 cursor-pointer"
+                                      aria-label="Remove image"
+                                    >
+                                      <XIcon className="w-5 h-5 text-white" />
+                                    </button>
+                                  </>
+                                ) : (
+                                  <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer">
+                                    <CameraIcon className="w-6 h-6 text-text-secondary mb-1" />
+                                    <span className="text-[10px] font-body text-text-secondary">Upload</span>
+                                  </label>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <FormControl>
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageChange}
+                                  className="w-full bg-surface dark:bg-[#0f172a] border-secondary-lighter dark:border-secondary rounded-2xl text-text-primary dark:text-surface focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 font-body file:mr-4 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary-dark hover:file:bg-primary-light-hover"
+                                />
+                              </FormControl>
+                              <p className="text-xs font-body text-text-secondary mt-1.5">
+                                JPG, PNG or GIF. Max 5MB.
+                              </p>
+                            </div>
+                          </div>
+                          <FormMessage className="text-danger-dark text-xs font-semibold" />
+                        </FormItem>
+                      )}
+                    />
+
                     {/* Name Field */}
                     <FormField
                       control={form.control}
@@ -210,38 +272,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
                                 type="email"
                                 placeholder="e.g., alex@company.com"
                                 className="w-full pl-12 pr-4 py-5 bg-surface dark:bg-[#0f172a] border-secondary-lighter dark:border-secondary rounded-2xl text-text-primary dark:text-surface placeholder:text-text-secondary/50 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 font-body"
-                                {...field}
-                              />
-                            </FormControl>
-                          </div>
-                          <FormMessage className="text-danger-dark text-xs font-semibold" />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Profile Image Field */}
-                    <FormField
-                      control={form.control}
-                      name="image"
-                      render={({ field: { value, onChange, ...field } }) => (
-                        <FormItem className="space-y-2">
-                          <FormLabel className="block text-sm font-semibold text-text-primary dark:text-surface font-body">
-                            Profile Image
-                          </FormLabel>
-                          <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-secondary group-focus-within:text-primary transition-colors duration-300">
-                              {previewUrl ? (
-                                <img src={previewUrl} alt="Preview" className="w-6 h-6 rounded-md object-cover border border-border" />
-                              ) : (
-                                <ImageIcon />
-                              )}
-                            </div>
-                            <FormControl>
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="w-full pl-12 pr-4 py-3 bg-surface dark:bg-[#0f172a] border-secondary-lighter dark:border-secondary rounded-2xl text-text-primary dark:text-surface focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 font-body file:mr-4 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-light file:text-primary-dark hover:file:bg-primary-light-hover"
                                 {...field}
                               />
                             </FormControl>
@@ -304,7 +334,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
                   </form>
                 </Form>
 
-                {/* Google Login Divider & Button */}
                 <div className="mt-6">
                   <div className="relative flex items-center mb-6">
                     <div className="flex-grow border-t border-border/60"></div>
@@ -325,7 +354,6 @@ export default function RegisterForm({ onSubmit }: { onSubmit: (data: any) => Pr
                   </button>
                 </div>
 
-                {/* Footer Link */}
                 <div className="mt-8 text-center">
                   <p className="text-text-secondary font-body">
                     Already have an account?{" "}

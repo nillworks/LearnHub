@@ -8,11 +8,11 @@ import {
   Smartphone,
   Award,
   RefreshCw,
-  Heart,
   ShieldCheck,
   Play,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WishlistButton } from './WishlistButton';
 
 const getVal = (field: any, defaultVal: string) => {
   if (!field) return defaultVal;
@@ -23,10 +23,12 @@ const getVal = (field: any, defaultVal: string) => {
 export const CoursePurchaseCard = ({
   course,
   isEnrolled = false,
+  isWishlisted = false,
   className,
 }: {
   course: any;
   isEnrolled?: boolean;
+  isWishlisted?: boolean;
   className?: string;
 }) => {
   const price = Number(course.price) || 0;
@@ -143,10 +145,14 @@ export const CoursePurchaseCard = ({
           )}
 
           {!isEnrolled && (
-            <button className="cursor-pointer w-full bg-transparent hover:bg-primary-light border border-secondary-lighter dark:border-secondary text-text-primary dark:text-surface font-semibold text-base rounded-xl py-3.5 flex items-center justify-center gap-2 transition-colors duration-200">
-              <Heart className="size-5" />
-              Add to Wishlist
-            </button>
+            <WishlistButton
+              courseId={course._id}
+              courseTitle={course.title || ''}
+              courseThumbnail={course.thumbnailUrl || ''}
+              coursePrice={Number(course.price) || 0}
+              instructorName={course.instructorName || ''}
+              initialWishlisted={isWishlisted}
+            />
           )}
         </div>
 

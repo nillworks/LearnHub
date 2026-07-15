@@ -1,11 +1,11 @@
-
+import AdminOverviewPage from "@/components/DashboardLayout/admin/Overview/AdminOverviewPage";
 
 const page = () => {
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <>
+      <AdminOverviewPage />
+    </>
+  );
+};
 
-export default page
+export default page;

@@ -26,7 +26,7 @@ const deepNormalize = (val: any): any => {
 
 const normalizeCourse = (course: any) => deepNormalize(course);
 
-const CourseDetailsPage = ({ course, isEnrolled = false }: { course: any; isEnrolled?: boolean }) => {
+const CourseDetailsPage = ({ course, isEnrolled = false, isWishlisted = false }: { course: any; isEnrolled?: boolean; isWishlisted?: boolean }) => {
   const normalizedCourse = normalizeCourse(course);
 
   return (
@@ -45,7 +45,7 @@ const CourseDetailsPage = ({ course, isEnrolled = false }: { course: any; isEnro
 
           {/* Sticky Purchase Card (Right Column on Desktop) */}
           <div className="hidden md:block w-full lg:w-[380px] shrink-0 sticky top-24">
-            <CoursePurchaseCard course={normalizedCourse} isEnrolled={isEnrolled} />
+            <CoursePurchaseCard course={normalizedCourse} isEnrolled={isEnrolled} isWishlisted={isWishlisted} />
           </div>
           
         </div>

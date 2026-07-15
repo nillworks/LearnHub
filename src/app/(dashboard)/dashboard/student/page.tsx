@@ -1,11 +1,12 @@
-import React from 'react'
+import StudentOverviewPage from '@/components/DashboardLayout/student/Overview/StudentOverviewPage';
+
 
 const page = () => {
   return (
-    <div>
-      Student page
-    </div>
-  )
-}
+    <>
+      <StudentOverviewPage />
+    </>
+  );
+};
 
-export default page
+export default page;

@@ -2,6 +2,7 @@ import CourseDetailsPage from "@/components/CourseDetailsPage/CourseDetailsPage"
 import getSingleCourse from "@/lib/api/getSingleCourse";
 import getUserSession from "@/lib/getUserSection";
 import checkEnrollment from "@/lib/api/checkEnrollment";
+import checkWishlist from "@/lib/api/checkWishlist";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,14 +19,18 @@ const page = async ({ params }: Props) => {
   }
 
   let isEnrolled = false;
+  let isWishlisted = false;
   const user = await getUserSession();
   if (user) {
-    isEnrolled = await checkEnrollment(id);
+    [isEnrolled, isWishlisted] = await Promise.all([
+      checkEnrollment(id),
+      checkWishlist(id),
+    ]);
   }
 
   return (
     <section>
-      <CourseDetailsPage course={course} isEnrolled={isEnrolled} />
+      <CourseDetailsPage course={course} isEnrolled={isEnrolled} isWishlisted={isWishlisted} />
     </section>
   )
 }
