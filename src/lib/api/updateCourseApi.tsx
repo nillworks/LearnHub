@@ -7,20 +7,13 @@ export const updateCourseApi = async (
   token?: string | null
 ) => {
   try {
-    // Remap 'thumbnail' → 'thumbnailUrl' to match MongoDB field name
-    const { thumbnail, ...rest } = updateData as any;
-    const payload = {
-      ...rest,
-      ...(thumbnail !== undefined ? { thumbnailUrl: thumbnail } : {}),
-    };
-
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/instructor/${instructorId}/course/${courseId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(updateData),
     });
 
     const data = await response.json();

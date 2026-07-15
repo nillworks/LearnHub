@@ -59,7 +59,7 @@ export const CourseHero = ({ course }: { course: any }) => {
               <Star className="size-4 fill-primary" />
             </div>
             <span className="font-heading font-bold text-white text-lg">
-              {course.avgRating ? course.avgRating.toFixed(1) : "4.8"}
+              {course.rating ? course.rating.toFixed(1) : "4.8"}
             </span>
             <span className="text-white/60 text-sm">
               (2,432 ratings)

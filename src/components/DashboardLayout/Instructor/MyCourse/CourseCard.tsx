@@ -19,7 +19,7 @@ export function CourseCard({ course, onEdit, onDelete, onViewStudents, onPreview
       {/* Thumbnail & Status */}
       <div className="relative h-40 w-full bg-secondary-lighter dark:bg-dark-bg">
         <img 
-          src={course.thumbnail} 
+          src={course.thumbnailUrl} 
           alt={course.title} 
           className="object-cover w-full h-full" 
         />
@@ -47,24 +47,24 @@ export function CourseCard({ course, onEdit, onDelete, onViewStudents, onPreview
         <div className="grid grid-cols-2 gap-3 text-sm text-text-secondary">
           <div className="flex items-center gap-1.5">
             <Users size={16} className="text-secondary-light" />
-            <span>{course.studentsEnrolled.toLocaleString()}</span>
+            <span>{(course.studentsEnrolled ?? 0).toLocaleString()}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <DollarSign size={16} className="text-secondary-light" />
-            <span>${course.revenue.toLocaleString()}</span>
+            <span>${(course.revenue ?? 0).toLocaleString()}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Star size={16} className="text-secondary-light" />
-            <span>{course.avgRating.toFixed(1)}</span>
+            <span>{(course.rating ?? 0).toFixed(1)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Calendar size={16} className="text-secondary-light" />
-            <span>{course.lastUpdated}</span>
+            <span>{new Date(course.lastUpdated || course.createdAt || '').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>
         </div>
 
         <div className="pt-4 border-t border-border dark:border-secondary flex justify-end">
-          <CourseActions courseId={course.id} onEdit={onEdit} onDelete={onDelete} onViewStudents={onViewStudents} onPreview={onPreview} />
+          <CourseActions courseId={course._id} onEdit={onEdit} onDelete={onDelete} onViewStudents={onViewStudents} onPreview={onPreview} />
         </div>
       </div>
     </div>

@@ -16,11 +16,13 @@ interface PaymentResponse {
 
 const paymentInformationPost = async (
   paymentData: PaymentData,
+  token?: string | null,
 ): Promise<PaymentResponse> => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(paymentData),
   });

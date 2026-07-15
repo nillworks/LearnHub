@@ -24,7 +24,7 @@ export function EditCourseModal({ isOpen, onClose, course, onSave }: EditCourseM
       setEditOutcomes(course.learningOutcomes && course.learningOutcomes.length > 0 ? [...course.learningOutcomes] : [{value: ""}]);
       setEditIsFree(course.isFree || false);
       setEditDifficulty(course.difficulty || "Beginner");
-      setThumbnailPreview(course.thumbnail || '');
+      setThumbnailPreview(course.thumbnailUrl || '');
     }
   }, [course]);
 
@@ -75,8 +75,8 @@ export function EditCourseModal({ isOpen, onClose, course, onSave }: EditCourseM
     
     const data: Partial<Course> = {
       ...(formEntries as any),
-      id: course.id,
-      thumbnail: thumbnailPreview,
+      _id: course._id,
+      thumbnailUrl: thumbnailPreview,
       difficulty: editDifficulty,
       isFree: editIsFree,
       price: editIsFree ? null : Number(formEntries.price || 0),

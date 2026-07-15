@@ -14,44 +14,44 @@ import Link from "next/link"
 // Mock data to demonstrate the design
 const initialMockCourses: Course[] = [
   {
-    id: "1",
+    _id: "1",
     title: "Complete Web Development Bootcamp 2026",
-    thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&h=300&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&h=300&fit=crop",
     status: "Published",
     studentsEnrolled: 12450,
     revenue: 45200,
-    avgRating: 4.8,
+    rating: 4.8,
     lastUpdated: "Oct 12, 2026",
   },
   {
-    id: "2",
+    _id: "2",
     title: "Advanced React Patterns & Next.js Masterclass",
-    thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&h=300&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&h=300&fit=crop",
     status: "Draft",
     studentsEnrolled: 0,
     revenue: 0,
-    avgRating: 0.0,
+    rating: 0.0,
     lastUpdated: "Nov 02, 2026",
   },
   {
-    id: "3",
+    _id: "3",
     title: "UI/UX Design for Developers",
-    thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&h=300&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500&h=300&fit=crop",
     status: "Pending",
     studentsEnrolled: 0,
     revenue: 0,
-    avgRating: 0.0,
+    rating: 0.0,
     lastUpdated: "Nov 15, 2026",
   },
   {
-    id: "4",
+    _id: "4",
     title: "Python for Data Science - Beginner to Pro",
-    thumbnail: "https://images.unsplash.com/photo-1526379095098-d400fd0bfce8?w=500&h=300&fit=crop",
+    thumbnailUrl: "https://images.unsplash.com/photo-1526379095098-d400fd0bfce8?w=500&h=300&fit=crop",
     status: "Rejected",
     rejectionReason: "Audio quality in modules 3 and 4 does not meet platform standards. Please re-record with reduced background noise.",
     studentsEnrolled: 0,
     revenue: 0,
-    avgRating: 0.0,
+    rating: 0.0,
     lastUpdated: "Nov 18, 2026",
   },
 ]
@@ -76,7 +76,7 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
   }
 
   const handleViewStudents = (id: string) => {
-    const course = courses.find(c => c.id === id)
+    const course = courses.find(c => c._id === id)
     setViewStudentsModal({ isOpen: true, courseId: id, courseTitle: course?.title || "Course" })
   }
 
@@ -91,7 +91,7 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
     }
   }
 
-  const selectedCourseForEdit = courses.find(c => c.id === editModal.courseId)
+  const selectedCourseForEdit = courses.find(c => c._id === editModal.courseId)
 
   return (
     <div className="w-full flex flex-col gap-6 py-6 md:py-8 px-4 md:px-8 lg:px-10">
@@ -161,7 +161,7 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
               <CourseCard 
-                key={course.id} 
+                key={course._id} 
                 course={course} 
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
@@ -177,7 +177,7 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
           <div className="sm:hidden grid grid-cols-1 gap-6">
             {courses.map((course) => (
               <CourseCard 
-                key={course.id} 
+                key={course._id} 
                 course={course} 
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}

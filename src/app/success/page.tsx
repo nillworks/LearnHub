@@ -1,5 +1,6 @@
 import paymentInformationPost from '@/lib/api/paymentInformationPost';
 import { stripe } from '@/lib/stripe';
+import { getTokenServer } from '@/lib/getTokenServer';
 import { redirect } from 'next/navigation';
 import { CheckCircle, Clock } from 'lucide-react';
 
@@ -33,7 +34,7 @@ export default async function Success({ searchParams }: SuccessPageProps) {
 
   const metadata: Record<string, string> = session.metadata ?? {};
 
-  await paymentInformationPost({ ...metadata, sessionId: session_id });
+  await paymentInformationPost({ ...metadata, sessionId: session_id }, await getTokenServer());
 
   if (session.status === 'complete') {
     const role = metadata.role || 'student';

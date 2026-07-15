@@ -2,7 +2,7 @@ import React from 'react';
 import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 export const CourseReviewsTab = ({ course }: { course: any }) => {
-  const avgRating = course.avgRating ? course.avgRating.toFixed(1) : "4.8";
+  const avgRating = course.rating ? course.rating.toFixed(1) : "4.8";
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

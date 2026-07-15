@@ -41,14 +41,14 @@ export function CourseTable({ courses, onEdit, onDelete, onViewStudents, onPrevi
           <tbody className="divide-y divide-border dark:divide-secondary">
             {courses.map((course) => (
               <tr 
-                key={course.id} 
+                key={course._id} 
                 className="hover:bg-primary-light/50 dark:hover:bg-primary-dark/20 transition-colors duration-200"
               >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                       <div className="relative h-12 w-20 shrink-0 bg-secondary-lighter dark:bg-dark-bg rounded-lg overflow-hidden border border-border dark:border-secondary">
                         <img 
-                          src={course.thumbnail} 
+                          src={course.thumbnailUrl} 
                           alt={course.title} 
                           className="object-cover w-full h-full" 
                         />
@@ -70,20 +70,20 @@ export function CourseTable({ courses, onEdit, onDelete, onViewStudents, onPrevi
                   <CourseStatusBadge status={course.status} />
                 </td>
                 <td className="px-6 py-4 text-center text-text-secondary">
-                  {course.studentsEnrolled.toLocaleString()}
+                  {(course.studentsEnrolled ?? 0).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-center text-text-secondary">
-                  ${course.revenue.toLocaleString()}
+                  ${(course.revenue ?? 0).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-center text-text-secondary">
-                  {course.avgRating.toFixed(1)}
+                  {(course.rating ?? 0).toFixed(1)}
                 </td>
                 <td className="px-6 py-4 text-text-secondary">
-                  {course.lastUpdated}
+                  {new Date(course.lastUpdated || course.createdAt || '').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-end">
-                    <CourseActions courseId={course.id} onEdit={onEdit} onDelete={onDelete} onViewStudents={onViewStudents} onPreview={onPreview} />
+                    <CourseActions courseId={course._id} onEdit={onEdit} onDelete={onDelete} onViewStudents={onViewStudents} onPreview={onPreview} />
                   </div>
                 </td>
               </tr>

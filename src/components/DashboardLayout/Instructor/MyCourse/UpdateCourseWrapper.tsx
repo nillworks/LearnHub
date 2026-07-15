@@ -17,14 +17,14 @@ interface UpdateCourseWrapperProps {
 export function UpdateCourseWrapper({ isOpen, onClose, course, instructorId }: UpdateCourseWrapperProps) {
 
   const handleSave = async (updatedData: Partial<Course>) => {
-    if (!course?.id || !instructorId) return;
+    if (!course?._id || !instructorId) return;
 
     onClose();
 
     const { data: tokenData } = await authClient.token();
     const token = tokenData?.token;
 
-    const response = await updateCourseApi(instructorId, course.id, updatedData, token);
+    const response = await updateCourseApi(instructorId, course._id, updatedData, token);
 
     if (response.success) {
       // Reload the page to fetch fresh data from the server

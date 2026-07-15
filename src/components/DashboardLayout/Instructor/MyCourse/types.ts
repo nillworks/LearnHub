@@ -1,13 +1,13 @@
 export interface Course {
-  id: string
+  _id: string
   title: string
-  thumbnail: string
+  thumbnailUrl: string
   status: "Draft" | "Pending" | "Published" | "Rejected"
   rejectionReason?: string
   studentsEnrolled: number
-  revenue: number
-  avgRating: number
-  lastUpdated: string
+  revenue?: number
+  rating: number
+  lastUpdated?: string
   category?: string
   language?: string
   difficulty?: string
