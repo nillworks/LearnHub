@@ -4,51 +4,40 @@ import { Bookmark, Star, Users, Clock, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export interface CourseCardProps {
-  id: string;
-  title: string;
-  thumbnail: string;
-  category: string;
-  difficulty?: string;
-  instructorName?: string;
-  instructorAvatar?: string;
-  price: number;
-  discountPrice?: number;
-  isFree?: boolean;
-  studentsEnrolled: number;
-  estimatedDuration?: string;
-  lessons?: number;
-  avgRating: number;
+  course: {
+    _id: string;
+    title: string;
+    thumbnailUrl?: string;
+    category?: string;
+    difficulty?: string;
+    instructorName?: string;
+    image?: string;
+    price?: number;
+    discountPrice?: number;
+    isFree?: boolean;
+    studentsEnrolled?: number;
+    estimatedDuration?: string;
+    lessons?: number;
+    rating?: number;
+  };
 }
 
-const CourseCard = ({
-  id,
-  title,
-  thumbnail,
-  category,
-  difficulty = 'Beginner',
-  instructorName = 'Instructor',
-  instructorAvatar = 'https://i.pravatar.cc/150?u=' + id, // default placeholder
-  price,
-  discountPrice,
-  isFree,
-  studentsEnrolled,
-  estimatedDuration = '24 hours',
-  lessons = 42,
-  avgRating,
-}: CourseCardProps) => {
-  const hasDiscount = discountPrice && discountPrice > 0;
+const CourseCard = ({ course }: CourseCardProps) => {
+  const price = course.price || 0;
+  const discountPrice = course.discountPrice || 0;
+  const hasDiscount = discountPrice > 0;
   const finalPrice = hasDiscount ? (price - discountPrice) : price;
   const discountPercent = hasDiscount ? Math.round((discountPrice / price) * 100) : 0;
 
   return (
-    <Link href={`/courses/${id}`} className="block h-full group">
+    <Link href={`/courses/${course._id}`} className="block h-full group">
       <div className="bg-white dark:bg-[#1e293b] border border-secondary-lighter dark:border-secondary rounded-3xl overflow-hidden shadow-sm hover:shadow-lg hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full relative">
         
         {/* THUMBNAIL */}
         <div className="relative overflow-hidden aspect-video w-full">
           <Image
-            src={thumbnail || 'https://via.placeholder.com/600x400?text=Course'}
-            alt={title}
+            src={course.thumbnailUrl || 'https://via.placeholder.com/600x400?text=Course'}
+            alt={course.title}
             fill
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
           />
@@ -56,10 +45,10 @@ const CourseCard = ({
           {/* Floating badges */}
           <div className="absolute top-3 left-3 flex gap-2">
             <span className="bg-white/90 dark:bg-[#1e293b]/90 backdrop-blur-sm text-primary-dark font-semibold text-xs rounded-full px-2.5 py-1 border border-primary-light/60">
-              {category}
+              {course.category}
             </span>
             <span className="bg-secondary/80 text-white text-xs rounded-full px-2.5 py-1">
-              {difficulty}
+              {course.difficulty || 'Beginner'}
             </span>
           </div>
 
@@ -70,7 +59,7 @@ const CourseCard = ({
 
           {/* Price badge */}
           <div className="absolute bottom-3 right-3">
-            {isFree ? (
+            {course.isFree ? (
               <span className="bg-primary text-white font-heading font-bold text-sm rounded-xl px-3 py-1.5 shadow-sm">
                 FREE
               </span>
@@ -92,12 +81,12 @@ const CourseCard = ({
           {/* Top row */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-primary text-xs font-semibold uppercase tracking-wide">
-              {category}
+              {course.category}
             </span>
             <div className="flex items-center gap-1">
               <Star className="text-primary size-3.5 fill-primary" />
               <span className="font-heading font-semibold text-secondary text-sm">
-                {avgRating?.toFixed(1) || '0.0'}
+                {course.rating?.toFixed(1) || '0.0'}
               </span>
               <span className="text-text-secondary text-xs">
                 (2.4k)
@@ -107,7 +96,7 @@ const CourseCard = ({
 
           {/* Course title */}
           <h3 className="font-heading font-bold text-secondary dark:text-surface text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200 mb-2">
-            {title}
+            {course.title}
           </h3>
 
           {/* Short description */}
@@ -117,13 +106,15 @@ const CourseCard = ({
 
           {/* Instructor row */}
           <div className="flex items-center gap-2 mb-4 overflow-hidden">
-            <img
-              src={instructorAvatar}
-              alt=""
-              className="w-7 h-7 rounded-full border-2 border-primary-light object-cover shrink-0"
-            />
+            {course.image && (
+              <img
+                src={course.image}
+                alt=""
+                className="w-7 h-7 rounded-full border-2 border-primary-light object-cover shrink-0"
+              />
+            )}
             <span className="text-secondary dark:text-surface text-xs font-medium truncate">
-              {instructorName}
+              {course.instructorName || 'Instructor'}
             </span>
             <span className="text-text-secondary text-xs shrink-0">·</span>
             <span className="text-text-secondary text-xs shrink-0">Instructor</span>
@@ -133,15 +124,15 @@ const CourseCard = ({
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-1 text-text-secondary text-xs">
               <Users className="size-3.5 text-primary shrink-0" />
-              <span className="truncate">{(studentsEnrolled ?? 0).toLocaleString()} students</span>
+              <span className="truncate">{(course.studentsEnrolled ?? 0).toLocaleString()} students</span>
             </div>
             <div className="flex items-center gap-1 text-text-secondary text-xs">
               <Clock className="size-3.5 text-primary" />
-              <span>{estimatedDuration}</span>
+              <span>{course.estimatedDuration || ''}</span>
             </div>
             <div className="flex items-center gap-1 text-text-secondary text-xs">
               <BookOpen className="size-3.5 text-primary shrink-0" />
-              <span className="truncate">{lessons ?? 0} lessons</span>
+              <span className="truncate">{course.lessons ?? 0} lessons</span>
             </div>
           </div>
 
@@ -151,7 +142,7 @@ const CourseCard = ({
           {/* Footer */}
           <div className="flex items-center justify-between pt-4 mt-auto">
             <div className="flex items-center">
-              {isFree ? (
+              {course.isFree ? (
                 <span className="font-heading font-bold text-primary text-lg">Free</span>
               ) : hasDiscount ? (
                 <div className="flex items-center">

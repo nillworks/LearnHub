@@ -29,12 +29,10 @@ export const CoursePurchaseCard = ({
   isEnrolled?: boolean;
   className?: string;
 }) => {
-  const price = Number(course.price) || 42;
+  const price = Number(course.price) || 0;
   const discountAmount = Number(course.discountPrice) || 0;
   const finalPrice = Math.max(price - discountAmount, 0);
-  const discountPercent =
-    discountAmount > 0 ? Math.round((discountAmount / price) * 100) : 0;
-  const saveAmount = discountAmount.toFixed(2);
+  const discountPercent = discountAmount > 0 ? Math.round((discountAmount / price) * 100) : 0;
 
   return (
     <div
@@ -91,7 +89,7 @@ export const CoursePurchaseCard = ({
             </div>
             {discountAmount > 0 && (
               <p className="text-primary font-medium text-sm">
-                You save ${saveAmount}
+                You save ${discountAmount.toFixed(2)}
               </p>
             )}
           </div>

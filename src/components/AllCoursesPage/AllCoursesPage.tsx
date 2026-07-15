@@ -566,23 +566,7 @@ export default function AllCoursesPage({
                   }`}
                 >
                   {courses.map((course) => (
-                    <CourseCard
-                      key={course._id}
-                      id={course._id}
-                      title={course.title || 'Untitled Course'}
-                      thumbnail={course.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
-                      category={course.category || 'General'}
-                      difficulty={course.difficulty || 'Beginner'}
-                      instructorName={course.instructorName || 'Instructor'}
-                      instructorAvatar={course.image || `https://i.pravatar.cc/150?u=${course._id}`}
-                      price={course.price || 0}
-                      discountPrice={course.discountPrice}
-                      isFree={course.isFree}
-                      studentsEnrolled={course.studentsEnrolled ?? 0}
-                      estimatedDuration={course.estimatedDuration || ''}
-                      lessons={course.lessons ?? 0}
-                      avgRating={course.rating ?? 0}
-                    />
+                    <CourseCard key={course._id} course={course} />
                   ))}
                   
                   {isFetching && Array.from({ length: 3 }).map((_, i) => (

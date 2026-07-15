@@ -32,22 +32,7 @@ const FeaturedCourses = async () => {
         {featuredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {featuredCourses.map((course: any) => (
-              <CourseCard
-                key={course?._id}
-                id={course?._id}
-                title={course?.title}
-                thumbnail={course?.thumbnailUrl}
-                category={course?.category || 'Development'}
-                difficulty={course?.difficulty || 'Beginner'}
-                instructorName={course?.instructorName || 'Instructor'}
-                instructorAvatar={course?.image || `https://i.pravatar.cc/150?u=${course?._id}`}
-                price={course?.price}
-                isFree={course?.isFree}
-                studentsEnrolled={course?.studentsEnrolled ?? 0}
-                estimatedDuration={course?.estimatedDuration || '24 hours'}
-                lessons={course?.lessons ?? 0}
-                avgRating={course?.rating ?? 0}
-              />
+              <CourseCard key={course?._id} course={course} />
             ))}
           </div>
         ) : (

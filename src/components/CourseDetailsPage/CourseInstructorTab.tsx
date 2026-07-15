@@ -66,56 +66,62 @@ export const CourseInstructorTab = ({ course }: { course: any }) => {
             {/* Using mock courses for the horizontal scrollable row */}
             <div className="min-w-[280px] max-w-[280px] snap-start">
               <CourseCard
-                id="1"
-                title="Advanced SEO Techniques"
-                thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
-                category={course?.category || 'Marketing'}
-                difficulty={course?.difficulty || 'Beginner'}
-                instructorName={course?.instructorName || 'Instructor'}
-                instructorAvatar={course?.instructorAvatar || 'https://i.pravatar.cc/150?u=1'}
-                price={course?.price || 0}
-                discountPrice={course?.discountPrice}
-                isFree={course?.isFree}
-                studentsEnrolled={course?.studentsEnrolled ?? 0}
-                estimatedDuration={course?.estimatedDuration}
-                lessons={course?.lessons ?? 0}
-                avgRating={course?.rating ?? 0}
+                course={{
+                  _id: '1',
+                  title: 'Advanced SEO Techniques',
+                  thumbnailUrl: course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course',
+                  category: course?.category || 'Marketing',
+                  difficulty: course?.difficulty || 'Beginner',
+                  instructorName: course?.instructorName || 'Instructor',
+                  image: course?.image,
+                  price: course?.price || 0,
+                  discountPrice: course?.discountPrice,
+                  isFree: course?.isFree,
+                  studentsEnrolled: course?.studentsEnrolled ?? 0,
+                  estimatedDuration: course?.estimatedDuration,
+                  lessons: course?.lessons ?? 0,
+                  rating: course?.rating ?? 0,
+                }}
               />
             </div>
             <div className="min-w-[280px] max-w-[280px] snap-start">
               <CourseCard
-                id="2"
-                title="Social Media Masterclass"
-                thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
-                category={course?.category || 'Marketing'}
-                difficulty={course?.difficulty || 'Beginner'}
-                instructorName={course?.instructorName || 'Instructor'}
-                instructorAvatar={course?.instructorAvatar || 'https://i.pravatar.cc/150?u=2'}
-                price={course?.price || 0}
-                discountPrice={course?.discountPrice}
-                isFree={course?.isFree}
-                studentsEnrolled={course?.studentsEnrolled ?? 0}
-                estimatedDuration={course?.estimatedDuration}
-                lessons={course?.lessons ?? 0}
-                avgRating={course?.rating ?? 0}
+                course={{
+                  _id: '2',
+                  title: 'Social Media Masterclass',
+                  thumbnailUrl: course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course',
+                  category: course?.category || 'Marketing',
+                  difficulty: course?.difficulty || 'Beginner',
+                  instructorName: course?.instructorName || 'Instructor',
+                  image: course?.image,
+                  price: course?.price || 0,
+                  discountPrice: course?.discountPrice,
+                  isFree: course?.isFree,
+                  studentsEnrolled: course?.studentsEnrolled ?? 0,
+                  estimatedDuration: course?.estimatedDuration,
+                  lessons: course?.lessons ?? 0,
+                  rating: course?.rating ?? 0,
+                }}
               />
             </div>
             <div className="min-w-[280px] max-w-[280px] snap-start">
               <CourseCard
-                id="3"
-                title="Content Marketing 101"
-                thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
-                category={course?.category || 'Marketing'}
-                difficulty={course?.difficulty || 'Beginner'}
-                instructorName={course?.instructorName || 'Instructor'}
-                instructorAvatar={course?.instructorAvatar || 'https://i.pravatar.cc/150?u=3'}
-                price={course?.price || 0}
-                discountPrice={course?.discountPrice}
-                isFree={course?.isFree}
-                studentsEnrolled={course?.studentsEnrolled ?? 0}
-                estimatedDuration={course?.estimatedDuration}
-                lessons={course?.lessons ?? 0}
-                avgRating={course?.rating ?? 0}
+                course={{
+                  _id: '3',
+                  title: 'Content Marketing 101',
+                  thumbnailUrl: course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course',
+                  category: course?.category || 'Marketing',
+                  difficulty: course?.difficulty || 'Beginner',
+                  instructorName: course?.instructorName || 'Instructor',
+                  image: course?.image,
+                  price: course?.price || 0,
+                  discountPrice: course?.discountPrice,
+                  isFree: course?.isFree,
+                  studentsEnrolled: course?.studentsEnrolled ?? 0,
+                  estimatedDuration: course?.estimatedDuration,
+                  lessons: course?.lessons ?? 0,
+                  rating: course?.rating ?? 0,
+                }}
               />
             </div>
           </div>

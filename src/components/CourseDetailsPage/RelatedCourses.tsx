@@ -15,24 +15,26 @@ export const RelatedCourses = ({ course }: { course: any }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Render 4 mock related courses using CourseCard with flattened props */}
+        {/* Render 4 mock related courses using CourseCard with course object */}
         {[1, 2, 3, 4].map((i) => (
           <CourseCard
             key={`r${i}`}
-            id={`r${i}`}
-            title={`Related Course ${i}`}
-            thumbnail={course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course'}
-            category={course?.category || 'General'}
-            difficulty={course?.difficulty || 'Beginner'}
-            instructorName={course?.instructorName || 'Instructor'}
-            instructorAvatar={course?.image || `https://i.pravatar.cc/150?u=r${i}`}
-            price={course?.price || 49.99}
-            discountPrice={course?.discountPrice}
-            isFree={course?.isFree}
-            studentsEnrolled={course?.studentsEnrolled ?? 0}
-            estimatedDuration={course?.estimatedDuration || '10 hours'}
-            lessons={course?.lessons ?? 0}
-            avgRating={course?.rating ?? 0}
+            course={{
+              _id: `r${i}`,
+              title: `Related Course ${i}`,
+              thumbnailUrl: course?.thumbnailUrl || 'https://placehold.co/600x400?text=Course',
+              category: course?.category || 'General',
+              difficulty: course?.difficulty || 'Beginner',
+              instructorName: course?.instructorName || 'Instructor',
+              image: course?.image,
+              price: course?.price || 0,
+              discountPrice: course?.discountPrice,
+              isFree: course?.isFree,
+              studentsEnrolled: course?.studentsEnrolled ?? 0,
+              estimatedDuration: course?.estimatedDuration,
+              lessons: course?.lessons ?? 0,
+              rating: course?.rating ?? 0,
+            }}
           />
         ))}
       </div>
