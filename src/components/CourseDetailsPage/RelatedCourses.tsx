@@ -29,7 +29,7 @@ export const RelatedCourses = ({ course }: { course: any }) => {
             price={course?.price || 49.99}
             discountPrice={course?.discountPrice}
             isFree={course?.isFree}
-            studentsEnrolled={course?.studentEnroll ?? 0}
+            studentsEnrolled={course?.studentsEnrolled ?? 0}
             estimatedDuration={course?.estimatedDuration || '10 hours'}
             lessons={course?.lessons ?? 0}
             avgRating={course?.rating ?? 0}

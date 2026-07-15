@@ -26,7 +26,7 @@ const deepNormalize = (val: any): any => {
 
 const normalizeCourse = (course: any) => deepNormalize(course);
 
-const CourseDetailsPage = ({ course }: { course: any }) => {
+const CourseDetailsPage = ({ course, isEnrolled = false }: { course: any; isEnrolled?: boolean }) => {
   const normalizedCourse = normalizeCourse(course);
 
   return (
@@ -45,7 +45,7 @@ const CourseDetailsPage = ({ course }: { course: any }) => {
 
           {/* Sticky Purchase Card (Right Column on Desktop) */}
           <div className="hidden md:block w-full lg:w-[380px] shrink-0 sticky top-24">
-            <CoursePurchaseCard course={normalizedCourse} />
+            <CoursePurchaseCard course={normalizedCourse} isEnrolled={isEnrolled} />
           </div>
           
         </div>
@@ -55,7 +55,7 @@ const CourseDetailsPage = ({ course }: { course: any }) => {
       </div>
 
       {/* Section 8: Mobile Bottom Bar */}
-      <CourseMobileBottomBar course={normalizedCourse} />
+      <CourseMobileBottomBar course={normalizedCourse} isEnrolled={isEnrolled} />
     </div>
   );
 };

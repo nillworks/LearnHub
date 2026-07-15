@@ -9,9 +9,11 @@ interface CourseTableProps {
   courses: Course[]
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
+  onViewStudents?: (id: string) => void
+  onPreview?: (id: string) => void
 }
 
-export function CourseTable({ courses, onEdit, onDelete }: CourseTableProps) {
+export function CourseTable({ courses, onEdit, onDelete, onViewStudents, onPreview }: CourseTableProps) {
   if (courses.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center bg-white dark:bg-[#1e293b] rounded-3xl border border-border dark:border-secondary">
@@ -81,7 +83,7 @@ export function CourseTable({ courses, onEdit, onDelete }: CourseTableProps) {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex justify-end">
-                    <CourseActions courseId={course.id} onEdit={onEdit} onDelete={onDelete} />
+                    <CourseActions courseId={course.id} onEdit={onEdit} onDelete={onDelete} onViewStudents={onViewStudents} onPreview={onPreview} />
                   </div>
                 </td>
               </tr>

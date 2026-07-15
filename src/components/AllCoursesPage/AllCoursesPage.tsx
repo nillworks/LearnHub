@@ -23,7 +23,7 @@ interface Course {
   price?: number;
   discountPrice?: number;
   isFree?: boolean;
-  studentEnroll?: number;
+  studentsEnrolled?: number;
   estimatedDuration?: string;
   lessons?: number;
   rating?: number;
@@ -578,7 +578,7 @@ export default function AllCoursesPage({
                       price={course.price || 0}
                       discountPrice={course.discountPrice}
                       isFree={course.isFree}
-                      studentsEnrolled={course.studentEnroll ?? 0}
+                      studentsEnrolled={course.studentsEnrolled ?? 0}
                       estimatedDuration={course.estimatedDuration || ''}
                       lessons={course.lessons ?? 0}
                       avgRating={course.rating ?? 0}

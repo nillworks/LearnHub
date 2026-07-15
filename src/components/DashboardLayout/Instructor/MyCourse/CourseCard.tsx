@@ -9,9 +9,11 @@ interface CourseCardProps {
   course: Course
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
+  onViewStudents?: (id: string) => void
+  onPreview?: (id: string) => void
 }
 
-export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
+export function CourseCard({ course, onEdit, onDelete, onViewStudents, onPreview }: CourseCardProps) {
   return (
     <div className="bg-white dark:bg-[#1e293b] rounded-3xl border border-border dark:border-secondary overflow-hidden hover:shadow-md transition-shadow duration-300">
       {/* Thumbnail & Status */}
@@ -62,7 +64,7 @@ export function CourseCard({ course, onEdit, onDelete }: CourseCardProps) {
         </div>
 
         <div className="pt-4 border-t border-border dark:border-secondary flex justify-end">
-          <CourseActions courseId={course.id} onEdit={onEdit} onDelete={onDelete} />
+          <CourseActions courseId={course.id} onEdit={onEdit} onDelete={onDelete} onViewStudents={onViewStudents} onPreview={onPreview} />
         </div>
       </div>
     </div>

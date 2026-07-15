@@ -1,19 +1,22 @@
-import headersAuthorization from '../headersAuthorization.server';
-
 /**
  * Fetches a single course by its ID from the backend API.
  * @param id The ID of the course to fetch
  */
 export const getSingleCourse = async (id: string) => {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+    // Try to get auth headers, but don't fail if unavailable (public endpoint)
+    let authHeaders: Record<string, string> = {};
+    try {
+      const { default: headersAuthorization } = await import('../headersAuthorization.server');
+      authHeaders = await headersAuthorization();
+    } catch {
+      // Not logged in or server-only import failed — proceed without auth
+    }
     
-    // Get the authorization headers (contains Bearer token)
-    const authHeaders = await headersAuthorization();
-    
-    // Fetch course from the backend
     const res = await fetch(`${apiUrl}/api/courses/${id}`, {
-      cache: 'no-store', // Ensures we always get fresh data (useful for dynamic details page)
+      cache: 'no-store',
       headers: {
         ...authHeaders,
         'Content-Type': 'application/json'
@@ -22,7 +25,7 @@ export const getSingleCourse = async (id: string) => {
     
     if (!res.ok) {
       if (res.status === 404) {
-        return null; // Course not found
+        return null;
       }
       throw new Error(`Failed to fetch course: ${res.statusText}`);
     }
@@ -36,7 +39,7 @@ export const getSingleCourse = async (id: string) => {
     }
   } catch (error) {
     console.error(`Error in getSingleCourse for ID ${id}:`, error);
-    return null; // Return null on error so the page can show a not-found or error state
+    return null;
   }
 };
 

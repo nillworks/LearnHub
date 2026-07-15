@@ -92,7 +92,9 @@ const SidebarContent = ({ user }: SidebarContentProps) => {
           <SidebarGroupContent>
             <SidebarMenu>
               {navLinks.map((link) => {
-                const isActive = pathname === link.href || pathname.startsWith(link.href + '/');
+                const isActive = link.title === 'Overview' 
+                  ? pathname === link.href 
+                  : (pathname === link.href || pathname.startsWith(link.href + '/'));
                 const Icon = link.icon;
                 return (
                   <SidebarMenuItem key={link.id}>

@@ -66,7 +66,7 @@ export const CourseHero = ({ course }: { course: any }) => {
             </span>
             <div className="flex items-center text-white/60 text-sm ml-2">
               <Users className="size-4 mr-1.5" />
-              {(course.studentsEnrolled || 12430).toLocaleString()} students
+              {(course.studentsEnrolled ?? 0).toLocaleString()} students
             </div>
           </div>
 

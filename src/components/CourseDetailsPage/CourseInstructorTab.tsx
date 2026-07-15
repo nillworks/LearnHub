@@ -76,7 +76,7 @@ export const CourseInstructorTab = ({ course }: { course: any }) => {
                 price={course?.price || 0}
                 discountPrice={course?.discountPrice}
                 isFree={course?.isFree}
-                studentsEnrolled={course?.studentEnroll ?? 0}
+                studentsEnrolled={course?.studentsEnrolled ?? 0}
                 estimatedDuration={course?.estimatedDuration}
                 lessons={course?.lessons ?? 0}
                 avgRating={course?.rating ?? 0}
@@ -94,7 +94,7 @@ export const CourseInstructorTab = ({ course }: { course: any }) => {
                 price={course?.price || 0}
                 discountPrice={course?.discountPrice}
                 isFree={course?.isFree}
-                studentsEnrolled={course?.studentEnroll ?? 0}
+                studentsEnrolled={course?.studentsEnrolled ?? 0}
                 estimatedDuration={course?.estimatedDuration}
                 lessons={course?.lessons ?? 0}
                 avgRating={course?.rating ?? 0}
@@ -112,7 +112,7 @@ export const CourseInstructorTab = ({ course }: { course: any }) => {
                 price={course?.price || 0}
                 discountPrice={course?.discountPrice}
                 isFree={course?.isFree}
-                studentsEnrolled={course?.studentEnroll ?? 0}
+                studentsEnrolled={course?.studentsEnrolled ?? 0}
                 estimatedDuration={course?.estimatedDuration}
                 lessons={course?.lessons ?? 0}
                 avgRating={course?.rating ?? 0}

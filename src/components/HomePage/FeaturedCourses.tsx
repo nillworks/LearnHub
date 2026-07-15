@@ -43,7 +43,7 @@ const FeaturedCourses = async () => {
                 instructorAvatar={course?.image || `https://i.pravatar.cc/150?u=${course?._id}`}
                 price={course?.price}
                 isFree={course?.isFree}
-                studentsEnrolled={course?.studentEnroll ?? 0}
+                studentsEnrolled={course?.studentsEnrolled ?? 0}
                 estimatedDuration={course?.estimatedDuration || '24 hours'}
                 lessons={course?.lessons ?? 0}
                 avgRating={course?.rating ?? 0}

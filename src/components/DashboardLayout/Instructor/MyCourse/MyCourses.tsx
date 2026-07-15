@@ -1,12 +1,15 @@
 "use client"
 
 import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Course } from "./types"
 import { CourseTable } from "./CourseTable"
 import { CourseCard } from "./CourseCard"
 import { UpdateCourseWrapper } from "./UpdateCourseWrapper"
 import { DeleteCourseFunction } from "./DeleteCourseFunction"
+import { ViewStudentsModal } from "./ViewStudentsModal"
 import { Plus, LayoutGrid, List, X } from "lucide-react"
+import Link from "next/link"
 
 // Mock data to demonstrate the design
 const initialMockCourses: Course[] = [
@@ -54,12 +57,14 @@ const initialMockCourses: Course[] = [
 ]
 
 export function MyCourses({ instructorCourseData, instructorId }: { instructorCourseData: Course[], instructorId: string }) {
+  const router = useRouter()
   const [courses, setCourses] = useState<Course[]>(instructorCourseData || [])
   const [viewMode, setViewMode] = useState<"table" | "grid">("table")
   
   // Modal States
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; courseId: string | null }>({ isOpen: false, courseId: null })
   const [editModal, setEditModal] = useState<{ isOpen: boolean; courseId: string | null }>({ isOpen: false, courseId: null })
+  const [viewStudentsModal, setViewStudentsModal] = useState<{ isOpen: boolean; courseId: string | null; courseTitle: string }>({ isOpen: false, courseId: null, courseTitle: "" })
 
   // Action Handlers
   const handleDeleteClick = (id: string) => {
@@ -68,6 +73,15 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
 
   const handleEditClick = (id: string) => {
     setEditModal({ isOpen: true, courseId: id })
+  }
+
+  const handleViewStudents = (id: string) => {
+    const course = courses.find(c => c.id === id)
+    setViewStudentsModal({ isOpen: true, courseId: id, courseTitle: course?.title || "Course" })
+  }
+
+  const handlePreview = (id: string) => {
+    router.push(`/courses/${id}`)
   }
 
   const confirmDelete = async () => {
@@ -118,10 +132,10 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
             </button>
           </div>
           
-          <button className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-semibold transition-colors duration-200">
+          <Link href="/dashboard/instructor/create-course" className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-semibold transition-colors duration-200">
             <Plus size={20} />
             <span>Create Course</span>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -139,6 +153,8 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
               courses={courses} 
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
+              onViewStudents={handleViewStudents}
+              onPreview={handlePreview}
             />
           </div>
         ) : (
@@ -149,6 +165,8 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
                 course={course} 
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
+                onViewStudents={handleViewStudents}
+                onPreview={handlePreview}
               />
             ))}
           </div>
@@ -163,6 +181,8 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
                 course={course} 
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
+                onViewStudents={handleViewStudents}
+                onPreview={handlePreview}
               />
             ))}
           </div>
@@ -209,6 +229,14 @@ export function MyCourses({ instructorCourseData, instructorId }: { instructorCo
         onClose={() => setEditModal({ isOpen: false, courseId: null })}
         course={selectedCourseForEdit || null}
         instructorId={instructorId}
+      />
+
+      {/* --- View Students Modal --- */}
+      <ViewStudentsModal
+        isOpen={viewStudentsModal.isOpen}
+        onClose={() => setViewStudentsModal({ isOpen: false, courseId: null, courseTitle: "" })}
+        courseId={viewStudentsModal.courseId}
+        courseTitle={viewStudentsModal.courseTitle}
       />
     </div>
   )
